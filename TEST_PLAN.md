@@ -314,3 +314,322 @@ The site is no longer on Netlify; it is hosted on Vercel. Items above that menti
 - **Meta Pixel:** now consent-gated. It loads only after "Accept" in the cookie banner (js.js); every footer has a "Cookie settings" button to change the choice. Verified headless: no facebook.net/facebook.com requests before consent or after decline; fbevents.js loads on accept and on later pages.
 - **SEO URLs:** canonical, Open Graph, structured data, sitemap.xml and robots.txt now use https://diamondridgeliving.ca.
 - Vercel serves `404.html` for missing paths automatically; `cleanUrls` is left off, so the `.html` URLs in canonicals and the sitemap stay valid.
+
+---
+
+## Valmont model update (12 models)
+
+Owner: QA · Branch: `revamp-homepage` · Baseline: working tree on 2026-10-25, before Frontend Dev's model changes (4 models: Tucker, Woodrow, Boone, Fatboy).
+Source of truth: `Spec Sheet/<name>.pdf` in each model folder under `Downloads\2 - Storey` and `Downloads\Bungalow` (`Archive` subfolders ignored, nothing in Downloads modified). MODELS.md (Senior Web Developer) is the team's extraction; QA cross-checks it against its own extraction below.
+
+Status key as above. The Phase 2 column is filled in after "frontend complete".
+
+### V0. QA's independent reference data (from the spec-sheet PDFs, `pdftotext -layout`)
+
+| Model | Type | Main / Upper sq ft | Total sq ft | Beds (page 1) | Baths | Garage | Starting from (incl. GST) | Plan variants (page 2) | Exteriors in Renders/ | Interiors in Renders/ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| The Duke | 2-storey | 1,020 / 1,150 | 2,170 | 3 Bed (+ bonus room; 4th bed optional) | 2.5 | 3-Car attached | $819,000 | Main, Upper | 1 (Option A) | Family Room, Kitchen, Kitchen & Dining |
+| The Fatboy | 2-storey | 1,230 / 1,400 | 2,630 | 3 Bed + Bonus | 2.5 | 3-Car | $949,000 | Main, Upper | 2 (Render, Option B) | Great Room, Kitchen |
+| The Metallica | 2-storey | 1,380 / 1,610 | 2,990 | 3 Bed + Den | 2.5 | 3-Car attached (30' wide) | $1,019,000 | Main, Upper | 3 (Render, B, C) | Kitchen, Dining, Family Room |
+| The Snowball | 2-storey | 1,700 / 1,250 | 2,950 | 3 Bed + Loft (main-floor primary) | 3.5 | 2-Car **detached** | $1,049,000 | Main, Upper | 1 (Option A) | Living Room, Kitchen, Dining |
+| The Winchester | 2-storey | 1,150 / 1,250 | 2,400 | 3 Bed + Den | 2.5 | 3-Car attached | $889,000 | Main, Upper | 2 (A, B) | Family Room, Kitchen, Ensuite, Ensuite 2 |
+| The Boone | Bungalow | 1,800 | 1,800 | 2 Bed | 2 | 2-Car attached | $769,000 | A: 1 Bed + Den 1,800 · B: 2 Bed 1,800 | 3 (A, B, C) | Family Room, Kitchen |
+| The Burrito (rental) | Bungalow | 1,100 | 1,100 | 1 Bed | 1.5 | 2-Car | $599,000 | Main floor 1,100 | 1 | Family Room, Kitchen |
+| The Madonna | Bungalow | 1,450 / 1,480 | 1,450 | 2 Bed | 2 | 2-Car "available" | $699,000 | A: 1 Bed + Den **1,450** · B: 2 Bed **1,480** | 3 (A, B, C) | Dining, Kitchen |
+| The Max | Bungalow | 1,280 | 1,280 | 2 Bed | 2 | 3-Car (oversized) | $639,000 | Main floor, 2 Beds | 3 (A, B, C) | Kitchen |
+| The Taco | Bungalow | 1,300 | 1,300 | 2 Bed | 2 | 2-Car (20' × 22') | $619,000 | Main floor 1,300 | 3 (Render, Option 2, Option 3) | Dining, Kitchen, Family Room |
+| The Tucker | Bungalow | 1,560 | 1,560 | 2 Bed | 2 | 3-Car side-attached | $709,000 | A: 1 Bed + Den 1,560 · B: 2 Bed 1,560 | 3 (A, B, C) | Kitchen, Family Room, Dining |
+| The Woodrow | Bungalow | 1,800 | 1,800 | 3 Bed | 2 | 2-Car (oversized) | $769,000 | A: 2 Bed 1,800 · B: 3 Bed 1,800 | 3 (A, B, C) | Family Room, Dining, Kitchen |
+
+Expected asset totals (non-Archive): **28 exteriors + 31 interiors = 59 renders, 21 floor-plan images, 12 brochures (92 files)**, unless the team deliberately drops some (that must be documented in MODELS.md).
+
+Traps found while building the reference, which the site must **not** copy:
+- **The folder names are wrong; use the spec sheets.** Duke "(1660)" vs 2,170; Fatboy "1300 & 1500 (2060)" vs 1,230 / 1,400 = 2,630; Metallica "1350 & 1600 (2150)" vs 1,380 / 1,610 = 2,990; Snowball "(1800)" vs 2,950; Winchester "(2150)" vs 2,400. The bungalow figures in parentheses (2230, 2050, 1915, 1770, 2260) appear nowhere in the PDFs.
+- **Old site figures are stale:** Tucker 1,660 sq ft / $669,000 / 1 + Den / 1.5 bath; Fatboy 1,350 and 1,450; the "Four designs" copy; Tucker "Vaulted great room: Standard" (now an optional add-on), "Sunshine basement" and "Stainless appliance package: Included" (not in the spec sheet).
+- **Boone and Woodrow share 1,800 sq ft and $769,000.** Check that their images and plans aren't swapped (Boone 2 Bed, 2-Car attached; Woodrow 3 Bed).
+- **The Madonna's sq ft depends on the variant** (1,450 vs 1,480). Its page 1 says "2 Bed", but page 3 makes the Den the standard layout and 2 bedrooms an add-on. The site must follow whatever MODELS.md decides and say so consistently. **Owner decision (2026-10-25): standard = 2 Bed, 1,480 sq ft; 1 Bed + Den, 1,450 sq ft is the alternate plan. See VN12.**
+- **Room-dimension tables can't be checked against the spec-sheet text.** The PDFs have no room dimensions except Taco's garage (20' × 22'). Any dimension list on the site must match the plan image, or be removed.
+- **Spec sheets are 3-4 pages and up to 21.8 MB each** (203.8 MB for all 12; the old brochures were 0.55-0.65 MB). Copying them unchanged blows the page and deploy budget.
+- PDF metadata checked: Title "Valmont Custom Homes · The X", Creator = headless Chromium, no author, user name or local path. PASS at source; re-check the copies.
+
+### V1. Data accuracy
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VD1 | MODELS.md agrees with the spec sheets | Diff MODELS.md against V0 field by field. Re-open the PDF page for any difference | 0 differences, or each one explained (e.g. the Madonna bed count) | PENDING |
+| VD2 | Per-model quick stats on homes.html | Script: parse each `section.model-block` (eyebrow, `.quickstats`, plan panel titles) and compare with V0 | Sq ft per floor and total, beds, baths, garage and price all match. 2-storey models show both floors | PENDING |
+| VD3 | Plan variants | Same script + visual | Boone, Madonna, Tucker and Woodrow show both options with the correct label and sq ft (Madonna: 2 Bed 1,480 standard and default, 1 Bed + Den 1,450 alternate; see VN12). 2-storey models show Main + Upper with the right per-floor sq ft | PENDING |
+| VD4 | Feature lists: standard vs optional | Read each model's feature list against PDF page 3 | Nothing the PDF calls "optional add-on" is marked Standard (vaulted great/family room, five-piece ensuite on Fatboy/Duke, rear patio, legal suite on Burrito, basement development) | PENDING |
+| VD5 | Price wording | grep | Every price is "Starting from $X" (incl. GST mentioned at least once per page) and matches V0. No old $669,000 | PENDING |
+| VD6 | Same data everywhere | grep sq ft / price / bed figures across index.html (model cards), builders.html, homes.html JSON-LD, og/meta descriptions | All copies agree with homes.html | PENDING |
+| VD7 | Images match their model | Perceptual check: downscale each site image and its source PNG/JPG and compare; also view the contact sheets | Each `assets/models/<slug>-*` derives from the same model's folder (catches Boone/Woodrow and Taco option swaps) | PENDING |
+| VD8 | Spot-check PDFs by eye | Render page 1 and page 2 of at least 4 PDFs (Fatboy, Madonna, Snowball, Tucker) to PNG and read them | Matches V0 / MODELS.md | PENDING |
+
+### V2. Completeness and stale content
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VC1 | All 12 models on homes.html | Count `section.model-block` ids and the jump nav | 12 blocks with unique ids. The jump nav links all 12, every `#anchor` resolves, and the order is sensible (e.g. grouped bungalow / 2-storey) | PENDING |
+| VC2 | Every exterior option is reachable | Count exterior switcher buttons per model vs V0 | 28 total, per-model counts as in V0 | PENDING |
+| VC3 | Every interior render is reachable | Same | 31 total | PENDING |
+| VC4 | Every floor plan variant is shown | Count plan images or plan-switcher tabs | 21 total | PENDING |
+| VC5 | Every brochure is linked | `a[href$=".pdf"]` per model | 12, each pointing at its own model's PDF, labelled "(PDF, opens in a new tab)" with the size | PENDING |
+| VC6 | No stale 4-model copy anywhere | `grep -niE "four (designs\|models\|homes\|plans)\|\b4 (designs\|models)\|1,?660\|1,?350\|1,?450 sq\|669,000\|sunshine basement"` on all HTML / JS / sitemap / MODELS.md | 0 hits (1,450 is allowed only for the Madonna) | PENDING |
+| VC7 | Dropdowns list the right models | Read `#bkInterest` (index.html), any model select on register.html / contact.html, and booking.js `selectedIndex` reset logic | All 12 models in the same order and spelling as homes.html. Generic options kept. Reset still selects the first option | PENDING |
+| VC8 | Other pages' model mentions | index.html model cards and portrait, builders.html Valmont copy and image, gallery.html | No page claims 4 models. Cards link to existing `homes.html#<id>` anchors | PENDING |
+| VC9 | Burrito / Taco wording | Read | Per MODELS.md §2: The Burrito is **not** labelled "Rental" (the spec sheet never says it); the legal suite is described as an optional add-on. No copy claims every model is named after a horse (Taco is a donkey) | PENDING |
+
+### V3. Assets
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VA1 | Every reference resolves | `qa_check.py` (src, href, data-src, srcset, og:image, JSON-LD `image`) + HTTP 200 from the local server | 0 missing | PENDING |
+| VA2 | No orphaned files | Set difference between the files in `assets/models` and every reference in HTML/JS/JSON-LD | 0 orphans (the old `*-plan-main.jpg` etc. are deleted or reused) | PENDING |
+| VA3 | Render weight | `du` + PIL dims | Each render ≤ ~300 KB (hard fail > 450 KB), JPEG or WebP, long edge ≈ 1600-2000 px | PENDING |
+| VA4 | Floor plans legible | Plan files open at 100% in the lightbox; room labels readable at 1440 px | Long edge ≥ 1400 px, ≤ ~600 KB, text sharp (no heavy JPEG artefacts) | PENDING |
+| VA5 | Brochure weight | `du` | Each PDF ≤ ~3 MB (hard fail > 10 MB; sources are up to 21.8 MB). Text still matches the source (`pdftotext` diff) | PENDING |
+| VA6 | width/height correct | `img_dims.py` | Every `<img>` declares the file's real intrinsic size (aspect within 1 %) | PENDING |
+| VA7 | Lazy loading | DOM + scroll test | Only the hero / first image in view is eager. Every model block below the fold is `loading="lazy"` + `decoding="async"`. Switcher images are not preloaded | PENDING |
+| VA8 | Alt text | Read every alt + check the switcher updates it | Descriptive and unique: "The Duke, exterior elevation A", "The Madonna floor plan, option B, 2 bedrooms, 1,480 sq ft". No filenames, no empty alt on content images. Stage alt updates on switch | PENDING |
+| VA9 | Filenames | `ls assets/models` | Lowercase slug, no spaces or `&`, no "archive", "final", "copy" | PENDING |
+
+### V4. SEO
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VS1 | Titles and descriptions | qa_check | Unique per page, title ≤ 60 chars, description ≤ 160 chars. homes.html copy now says 12 designs (no "Four designs" in title, description, og or twitter) | PENDING |
+| VS2 | JSON-LD per model | Extract every `application/ld+json`, `JSON.parse`, check the structure | 12 `Product` (+ `SingleFamilyResidence`) items in the ItemList with `name`, absolute `image`, `offers.price` as a number equal to V0, `priceCurrency: CAD`, `floorSize` in FTK equal to the total sq ft, `numberOfBedrooms` / `numberOfBathroomsTotal` consistent with the page, `url` pointing at `https://diamondridgeliving.ca/homes.html#<id>` and a resolving anchor. `numberOfItems` = 12 | PENDING |
+| VS3 | Sitemap | Read sitemap.xml | Lists any newly added page. `lastmod` updated for homes.html (and index / builders if changed). Only diamondridgeliving.ca URLs | PENDING |
+| VS4 | Canonical / OG URLs | qa_check | Every page's canonical and og:url is `https://diamondridgeliving.ca/<page>.html`. og:image is absolute and resolves | PENDING |
+| VS5 | Headings | qa_check | One h1. Each model is an h2, sub-panels h3 or `p.panel-title`. No skipped levels | PENDING |
+
+### V5. Security
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VX1 | No unsafe sinks with data | grep `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write` in js.js, booking.js, inline scripts | Switcher/plan code uses `textContent` / `setAttribute`. Any `innerHTML` is a constant | PENDING |
+| VX2 | New-tab links | qa_check | Every `target="_blank"` has `rel="noopener noreferrer"` (12 brochures + any new) | PENDING |
+| VX3 | Nothing sensitive in copied files | `ls`, grep the repo for `downloads`, `tarik`, `c:\`, `file://`, and read PDF metadata on the copies with pypdf | No local paths, user names or archive names in filenames, HTML, JSON-LD or PDF metadata | PENDING |
+| VX4 | Brochure contact details | `pdftotext` on the copies | Only the public Valmont business contact (phone / info@valmontcustomhomes.com) as in the source. No price sheets or drafts from Archive | PENDING |
+| VX5 | vercel.json still valid | `JSON.parse`, headers unchanged | Security headers and the /assets cache still apply to the new files | PENDING |
+
+### V6. Performance (homes.html)
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VP1 | Initial-load weight | Puppeteer @1440 and @390, cache off, sum of `encodedDataLength`, no scroll | ≤ 1.5 MB transferred (fonts + CSS + JS + above-the-fold images) | PENDING |
+| VP2 | Fully scrolled weight | Same, scroll to the bottom in steps, wait for network idle | Record it. Target ≤ 10 MB (12 stage images + plans). Previous 4-model page: 4.04 MB | PENDING |
+| VP3 | Switcher loading | Click every switcher button | Each click loads only the selected image. No 404s | PENDING |
+| VP4 | Layout shift | PerformanceObserver `layout-shift` during load + full scroll + switching an exterior → interior → plan (images with different aspect ratios) | CLS < 0.02 at load/scroll. The stage keeps a fixed aspect box, so switching causes no shift beyond the stage | PENDING |
+| VP5 | LCP element | PerformanceObserver | Hero image, eager + `fetchpriority="high"` | PENDING |
+
+### V7. Regressions
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VR1 | Cookie consent | `consent_check.js` | No facebook.net / facebook.com requests before Accept or after Decline. Pixel loads after Accept. "Cookie settings" reopens the banner | PENDING |
+| VR2 | Booking mailto | `booking_check.js` with the new interest list | `mailto:info@diamondridgeliving.ca` with every field encoded. Interest = the chosen model name. Re-open resets | PENDING |
+| VR3 | Mobile nav | run.js nav checks | Burger toggles `aria-expanded`, Esc closes and refocuses, resets past 60em | PENDING |
+| VR4 | Lightbox keyboard | Tab to each stage and plan link, Enter, Tab (trap), Esc | Opens, focus held on close, Esc returns focus to the trigger. Works for every model block | PENDING |
+| VR5 | Plan / view switcher keyboard | Tab + Enter/Space on every switch | `aria-pressed` moves, image + caption + alt update, focus stays on the button. Plan-variant tabs (if a tablist is used) follow the ARIA pattern (arrow keys, `aria-selected`) | PENDING |
+| VR6 | No horizontal scroll | 9 pages × 320/375/768/1024/1440 | `scrollWidth ≤ clientWidth` and no element past the viewport (the 12-item jump nav and long quick stats at 320 px are the most likely to break) | PENDING |
+| VR7 | Console | All pages @375 + @1440 | 0 console errors, 0 page errors, 0 failed requests | PENDING |
+| VR8 | axe-core 4.10.2 WCAG 2.1 AA | All 9 pages, after scrolling (reveal done) | 0 violations | PENDING |
+| VR9 | SCSS | `npx sass@1.79.4 css/styles.scss <tmp> --style=compressed --no-source-map`, then `cmp` with css/styles.css | Compiles without warnings. Byte-identical | PENDING |
+| VR10 | JS syntax | `node --check` on js.js, booking.js and the extracted inline scripts | OK | PENDING |
+| VR11 | No-JS / reduced motion | JS disabled; `prefers-reduced-motion` | All 12 models visible with their default image. Nothing hidden by `.reveal` | PENDING |
+
+### V8. Code review
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VCR1 | Diff review of every changed file | `git status` / `git diff` against Frontend Dev's list; read every hunk | The list matches. No debug leftovers. Consistent markup per model block (same classes / ids pattern). No duplicate ids. HTML well-formed (qa_check) | PENDING |
+| VCR2 | SCSS changes | Read the diff | Uses the existing tokens/mixins. No hard-coded colours that fail contrast. No new `!important` | PENDING |
+| VCR3 | JS changes | Read the diff | Generic per-model code (no 12 copies). Guards for missing elements. Event delegation where sensible | PENDING |
+| VCR4 | MODELS.md | Read | Accurate (VD1). States the source of each figure and any judgement calls | PENDING |
+
+### V9. Phase 2 execution steps
+1. `git status` / `git diff --stat` vs Frontend Dev's list.
+2. Build `models_ref.json` from V0 (and MODELS.md once written), then run a `models_check.py` that parses homes.html, index.html, builders.html, JSON-LD and the dropdowns (V1, V2, VS2).
+3. Asset scripts: orphans, sizes, PIL dims, `img_dims.py`, a perceptual match against Downloads (read-only), pdftotext and metadata on the copied PDFs (V3, VX3-4).
+4. Adapt `run.js` / `regress.js` / `consent_check.js` / `booking_check.js` to 12 models. Add the weight and CLS scenario (V6) and the switcher/lightbox keyboard checks (VR4-5).
+5. `qa_check.py`, `node --check`, sass compile + `cmp`.
+6. Fix bugs with minimal edits, record them below, and re-run every suite on the final tree.
+
+### V10. Addendum after MODELS.md (structure decided by Senior Web Developer)
+
+MODELS.md §1 is the data oracle. It agrees with V0 on every figure. Decisions: Boone shows "1 Bed + Den or 2 Bed"; **Madonna superseded by the owner decision below**; room dimensions dropped; Burrito not labelled rental. Structure: `homes.html` becomes an overview with a collection filter and 12 cards (`id="<slug>"`, so the old `#tucker`, `#woodrow`, `#boone` and `#fatboy` links still work), plus 12 pages `homes/the-<slug>.html`. Assets: `.webp` renders and plans, `<slug>-ext-a.jpg` for og:image, and `<slug>-card.webp`, so the expected total is 92 + 12 cards + 12 og jpgs. Budgets in MODELS.md §3: renders ≤ 300 KB, cards ≤ 80 KB, plans ≤ 350 KB, brochures ≤ 3 MB. V1-V8 apply to the overview **and** all 12 model pages; the counts in VC2-VC5 are summed across the model pages.
+
+| ID | Test | Method | Expected | Phase 2 |
+|---|---|---|---|---|
+| VN1 | Stale values from MODELS.md §5 are gone | grep every HTML / JS / XML file for `1,660`, `669,000`, `2,800`, `1,350`, `1,450` (outside the Madonna), `799,000`, `699,000` (outside the Madonna), `Sunshine`, `Stainless appliance`, `Four designs`, `all four`, room-dimension lists, "largest plan" outside the Metallica | 0 hits | PENDING |
+| VN2 | Overview filter | Click All / Bungalows / Two-storey; keyboard; **JS off** | `aria-pressed` correct and sections toggle `hidden`. With JS off, both sections (12 cards) show and the filter buttons are hidden. Old `homes.html#<slug>` anchors scroll to the card | PENDING |
+| VN3 | Subfolder paths | Load every `homes/the-*.html` over HTTP and record every request | 0 404s. CSS, JS, fonts, images, brochures, nav, footer, `../index.html#book`, breadcrumb and "More homes" cards all resolve. `aria-current="page"` on Homes | PENDING |
+| VN4 | Consent on the model pages | consent_check on 2+ model pages (bungalow + two-storey) | Same as VR1. The Pixel snippet is identical to the other pages | PENDING |
+| VN5 | Booking optgroups + mailto | Read the `#bkInterest` DOM and submit with a model chosen from each optgroup | "The showhomes" first, then optgroup "Valmont bungalows" (7, table order), "Valmont two-storey" (5), then lots and general tour. The mailto body carries the chosen model. Reset goes back to index 0 | PENDING |
+| VN6 | Lightbox "Zoom in" toggle | Keyboard: open the lightbox from a plan, Tab to Zoom, Enter/Space, Esc | Has a name and `aria-pressed` (or a label change). It zooms and scrolls/pans at 375 and 1440 px. Focus stays trapped. Esc closes and returns focus. Zoom resets on the next open. No horizontal page scroll | PENDING |
+| VN7 | Per-page SEO | qa_check + JSON parse on all 13 pages | Unique title / description / canonical / og:url (`https://diamondridgeliving.ca/homes/the-<slug>.html`). Absolute og:image ext-a jpg with real width and height. Product+SingleFamilyResidence numbers equal §1 (floorSize, bedrooms, full + partial baths, price, CAD, `valueAddedTaxIncluded`). Breadcrumb. homes.html ItemList has 12 entries with model-page URLs. priceRange `$150,000–$1,049,000` on index and contact | PENDING |
+| VN8 | Sitemap +12 | Parse sitemap.xml | Previous 8 URLs + 12 model pages = 20. Every URL returns 200 locally. `lastmod` bumped on changed pages | PENDING |
+| VN9 | 12 pages consistent | If generated, re-run `tools/build_models.py` and diff (idempotent); else diff the shared head, header and footer blocks | Identical shared blocks; only model data differs | PENDING |
+| VN10 | Deploy exclusions | Read `.vercelignore` | `*.md`, `tools/`, `.vscode/`, `localize_assets.py` excluded; nothing the site references is excluded | PENDING |
+| VN11 | Brochures | Size + `pdftotext` diff against the source + pypdf metadata | 12 PDFs at 0.87-1.61 MB each, text identical, no local paths. Owner decision: brochures stay compressed, so the ≤ 3 MB budget stands | PENDING |
+| VN12 | **Madonna (owner decision, 2026-10-25)** | models_check + read the overview card, the model page, JSON-LD, index/builders mentions, booking | Standard layout is **2 Bed, 1,480 sq ft**: eyebrow, quick stats (beds "2 Bed", sq ft "1,480"), card `m-spec`, `<title>` / description if they quote sq ft, and JSON-LD `floorSize` 1480 + `numberOfBedrooms` 2. **1 Bed + Den, 1,450 sq ft is the alternate plan**, captioned as such; the 2 Bed plan is the default (first, `aria-pressed="true"`) in the plan switch and in the stage on load. No "1 Bed + Den or 2 Bed" wording and no "two-bedroom configuration is an add-on" wording for the Madonna anywhere (features list included). 1,450 appears only on the alternate plan caption/alt. **Exception, not a failure:** `madonna-brochure.pdf` is Valmont's own document and still shows 1,450 with the den as standard (flagged for the owner in MODELS.md §6). Boone unchanged ("1 Bed + Den or 2 Bed", 1,800) | PENDING |
+
+
+### Phase 2 results (model update, 2026-10-25)
+
+Frontend Dev reported "frontend complete" and QA ran the plan against that working tree. Nothing is committed. This section supersedes the "PENDING" Phase 2 column in tables V1-V10.
+
+#### What changed (verified with `git status`)
+This matches Frontend Dev's list and Senior Web Developer's files exactly.
+- **Modified:** homes.html, index.html, builders.html, contact.html, sitemap.xml, js.js, css/styles.scss, css/styles.css.
+- **Replaced:** the 4 old brochures and the 4 `*-ext-a.jpg` og images.
+- **Deleted:** 22 old jpgs.
+- **New:** 12 `homes/the-<slug>.html`, `tools/build_models.py` + `tools/models.json`, 92 `.webp` (59 renders, 21 plans, 12 cards), 8 new og jpgs, 8 new brochures, `.vercelignore`, MODELS.md.
+- `assets/models` now holds 116 files: 92 webp, 12 jpg and 12 pdf.
+
+#### How it was verified
+- **`models_check.py`** (QA scratch, independent of `tools/models.json`). It parses the rendered HTML of all 21 pages and compares it with `models_ref.json`, QA's own extraction from the 12 spec-sheet PDFs (with the owner's Madonna decision).
+  - **Per model page:** title, description, canonical and og:url; h1 and eyebrow; quick stats (price, sq ft, beds, baths); exterior/interior/plan counts and plan order; default plan; floor and variant captions; that every switch points at its own model.
+  - **JSON-LD:** Product numbers, offer, VAT flag, url and image.
+  - **Brochure:** link and size label, the "Named for" line (donkey only on the Taco), and aria-current.
+  - **Overview:** 12 cards (id, href, sq ft, price, baths, order) and the ItemList.
+  - **index.html:** featured cards and the exact booking option list.
+  - **sitemap.xml:** 20 URLs, all resolving to files.
+  - **Every page:** every src/href/srcset/data-src/og:image/JSON-LD URL resolves; declared img width/height and switch data-w/h equal the real file dimensions; og:image width/height are real.
+  - **assets/models:** no orphans; filenames are slugs; size budgets.
+  - **Result:** **2,541 checks, 0 real failures.** One flag is not a defect: madonna-card.webp is 80,194 B, inside 80 KiB.
+- **`imgmatch.py` / `planmatch.py`** (read-only on Downloads). Every site image is matched against all 80 non-Archive source images.
+  - All 59 renders, 12 og jpgs and 12 cards match their own model's source; renders at distance 0, and Boone A matches after rotation.
+  - All 21 plans match the correct variant after whitespace trim: right variant 1-24, wrong variant 532-7368.
+  - No Boone/Woodrow, Taco-option or plan-variant swaps. 100 % crops of two plans (Madonna 2 Bed, Metallica upper) are sharp and readable.
+- **Brochures:** `pdftotext -layout` of each copy is byte-identical to the source spec sheet's text. Sizes are 0.87-1.61 MB. pypdf metadata and XMP contain no user name, local path or "archive".
+- **`python -I tools/build_models.py`** re-run: the output is byte-identical to the tree (idempotent).
+- **`npx sass@1.79.4`:** compiles cleanly, and the output is byte-identical to css/styles.css. `node --check js.js booking.js` passes. vercel.json and tools/models.json parse.
+- **`qa_check.py`** on the root and homes/: 0 structure errors, 0 duplicate IDs, 0 missing files. One h1 per page, no skipped headings. Expected noise only: `index.html#book` is opened by JS, and 404 has no canonical/OG (noindex).
+- **Browser:** headless Chrome via puppeteer-core 23.11.1 + axe-core 4.10.2, served by `python -m http.server 8799` from the repo.
+  - **`qa_run.js`:** Frontend Dev's `run.js` copied with BASE from the environment, and its stale Netlify-POST assertion replaced by a mailto capture via CDP `Page.frameRequestedNavigation`.
+  - **`qa_models.js`:** new, written by QA to cover what run.js samples only partially.
+  - **Final tree: `qa_run.js` 346/346, `qa_models.js` 172/174.** The 2 misses are QA's stricter 0.02 CLS target; see VP4.
+- **`qa_run.js` covers:**
+  - Layout on 21 pages × 7 widths (320-1440).
+  - Console and network on 21 pages × 2 widths.
+  - axe WCAG 2.1 AA on all 21 pages.
+  - CLS @390.
+  - Nav, booking dialog and video.
+  - Filter, and the legacy anchors #tucker/#woodrow/#boone/#fatboy.
+  - Deep switcher, lightbox, zoom and consent checks on 4 models.
+  - No-JS on 4 pages.
+- **`qa_models.js` covers:**
+  - All 12 models: every view and plan switch (70 buttons) by keyboard, alternating Enter and Space. Checks src, lightbox href, alt, caption, declared size, aria-pressed and kept focus.
+  - Stage and plan lightbox on every model by keyboard: opens, focus on Close, 6 Tab + 3 Shift+Tab stay inside.
+    - On plans, Zoom toggles with Enter and Space: aria-pressed and label change, native size, the pane joins the Tab cycle only while zoomed, and Arrow/PageDown scroll it.
+    - Esc closes, resets the zoom and returns focus. Reopening starts un-zoomed.
+  - Zoomed lightbox at 375 px.
+  - `homes.html#<slug>` for all 12. Filter, then a deep link into the hidden section.
+  - No-JS on homes.html and all 12 model pages.
+  - Page weight at load and fully scrolled, with CLS and LCP, on the 13 homes pages at 390 and 1440.
+  - Consent accept/decline on model pages.
+  - Booking mailto for one model per optgroup.
+  - The video toggle versus the cookie banner on 3 pages × 4 widths.
+- **`axe_states.js`:** axe on homes.html with the Bungalows filter on, and on a model page with the lightbox open and zoomed, at 375 and 1280.
+- **CLS sweeps (`cls_sweep.js`):** cold loads (fresh browser context, banner shown) of all 12 model pages:
+  - 320-1440 px in 32 px steps (432 loads);
+  - 320-640 px in 16 px steps;
+  - other pages 320-640 px.
+  - **`cls_warm.js`:** the same pages reached from homes.html, with fonts cached.
+
+#### Results per item
+
+| ID | Result | Notes |
+|---|---|---|
+| VD1 MODELS.md vs spec sheets | PASS | §1 equals QA's V0 on every figure. Madonna updated to the owner decision |
+| VD2 quick stats | PASS | price, sq ft, beds and baths correct on all 12 pages (models_check) |
+| VD3 plan variants | PASS | plan order and default correct. Two-storey captions carry the per-floor sq ft. Madonna: 2 Bed 1,480 default, "1 Bed + Den — 1,450 sq ft (alternate plan)" |
+| VD4 standard vs optional | PASS | read on 6 models against spec page 3 (Fatboy, Tucker, Duke, Snowball, Metallica, Burrito). Every vaulted ceiling, five-piece ensuite upgrade, patio and legal suite is Optional |
+| VD5 price wording | PASS | "Starting price · incl. GST" / "From $X incl. GST". No $669,000 / $799,000 |
+| VD6 same data everywhere | PASS | model pages, overview cards, index cards, JSON-LD, titles and descriptions agree |
+| VD7 images match their model | PASS | perceptual match: 0 swaps across 104 images. Boone ext-a rotated upright correctly |
+| VD8 PDF spot-check | PASS | all 12 PDFs text-extracted (stronger than 4 visual checks). Copies are text-identical to the sources |
+| VC1 12 models | PASS | 12 cards with unique ids. Order: price ascending per collection |
+| VC2-VC5 counts | PASS | 28 exteriors, 31 interiors, 21 plans, 12 brochures |
+| VC6 stale copy | PASS | 0 hits. "Sunshine Village" (discover.html) is a ski hill, not the old basement wording |
+| VC7 dropdowns | PASS | the exact `#bkInterest` list and optgroups. Mailto verified for Burrito, Madonna, Woodrow, Duke and Snowball. Reset → index 0. register.html left generic (MODELS.md §4) |
+| VC8 other pages | PASS | index (4 featured, "Twelve designs") and builders (twelve, 2,170-2,990) |
+| VC9 Burrito / Taco wording | PASS | no "rental". Taco's "Named for" line says donkey. The intro says eleven horses and one donkey |
+| VN12 Madonna decision | PASS | 2 Bed / 1,480 in title, description, eyebrow, quick stats, card and JSON-LD (1480, 2). No "or 2 Bed" or add-on wording. 1,450 only on the alternate plan and its option line. The brochure still shows 1,450, which is expected |
+| VA1 references resolve | PASS | 0 missing on 21 pages, including srcset, data-src, og:image and JSON-LD URLs |
+| VA2 orphans | PASS | 0 orphans out of 116 files |
+| VA3 render weight | PASS | all ≤ 300 KB (largest 296,973 B, max-ext-a.jpg). Cards ≤ 80 KiB (madonna-card 80,194 B) |
+| VA4 plans legible | PASS | 2000 px long edge, 47-84 KB webp. 100 % crops are sharp. Lightbox Zoom shows native size |
+| VA5 brochure weight | PASS | 0.87-1.61 MB. Text identical. The size labels use 1024-based MB (e.g. 1.30 MB file → "1.2 MB"), the same convention as browsers' download UI |
+| VA6 width/height | PASS | every img and every switch's data-w/h equals the real pixels. og:image dims are real |
+| VA7 lazy loading | PASS | the stage is eager + fetchpriority=high; everything else lazy. Switch targets load only on click |
+| VA8 alt text | PASS | e.g. "The Madonna rendering — Elevation A", "The Madonna floor plan — 2 Bed — 1,480 sq ft". Updates on switch |
+| VA9 filenames | PASS | lowercase slugs only |
+| VS1 titles / descriptions | PASS | unique on 21 pages. Model titles 46-55 chars, descriptions ≤ 160. index.html title is 64 chars, unchanged from last round |
+| VS2 / VN7 JSON-LD | PASS | parses on every page. Product+SingleFamilyResidence numbers equal §1 (floorSize FTK, bedrooms, full + partial baths, price, CAD, valueAddedTaxIncluded). ItemList has 12 entries in order. priceRange is $150,000–$1,049,000 on index and contact |
+| VS3 / VN8 sitemap | PASS | valid XML, 20 URLs, all resolve. lastmod 2026-10-25 on the changed pages |
+| VS4 canonical / OG | PASS | absolute diamondridgeliving.ca URLs. og:image is an absolute jpg with real dims |
+| VS5 headings | PASS | one h1 per page (the model name on model pages), no skips |
+| VX1 sinks | PASS | switcher and filter use textContent / properties. The two `innerHTML` uses in js.js (lightbox, cookie banner) are constant strings |
+| VX2 new-tab links | PASS | all carry `noopener noreferrer` |
+| VX3 sensitive data | PASS | no local paths or user names in filenames, HTML, JSON-LD or PDF metadata/XMP. Only "tools/build_models.py" appears in two HTML comments (harmless) |
+| VX4 brochure contacts | PASS | only Valmont's public phone/email, as in the source |
+| VX5 / VN10 vercel.json, .vercelignore | PASS | vercel.json parses. `.vercelignore` excludes *.md, tools/, .vscode/, localize_assets.py; nothing the site loads is excluded |
+| VP1 initial weight | PASS | homes.html 0.39 MB @390 / 0.76 MB @1440. Model pages 0.42-0.55 MB |
+| VP2 fully scrolled | PASS | homes.html 0.95 / 1.12 MB (the old 4-model page was 4.04 MB). Model pages 0.69-0.82 MB |
+| VP3 switcher loading | PASS | each click loads one image, 0 failed requests |
+| VP4 CLS | **FIXED (model-page regression); site-wide issue open** | see bug 1 and open item 1. After the fix: no model page ≥ 0.05 at any width ≥ 512 px. Navigating from homes.html (fonts cached) = 0.000 |
+| VP5 LCP | PASS | homes.html: `hero-media`. Model pages: the `<slug>-stage` image (eager, high priority) |
+| VR1 / VN4 consent | PASS | no facebook request before Accept on any page. Accept loads fbevents and the next page loads it without the banner. Decline → none on the next page. "Cookie settings" reopens. The Pixel block is byte-identical on all 21 pages |
+| VR2 / VN5 booking | PASS | mailto to info@ with every field encoded (HTML in the name stays text, no CR/LF). Optgroups work |
+| VR3 mobile nav | PASS | |
+| VR4 lightbox keyboard | PASS | on all 12 models, stage and plan |
+| VR5 / VN6 switcher + Zoom keyboard | PASS | see the qa_models coverage above. At 375 px zoomed: no page overflow; Close and Zoom are on-screen and clickable |
+| VR6 horizontal scroll | PASS | 21 pages × 320/375/414/768/1024/1280/1440 |
+| VR7 console | PASS | 0 errors and 0 failed requests, including during all interactions |
+| VR8 axe | PASS | 0 violations on 21 pages, plus filter and lightbox/zoom states |
+| VR9 SCSS | PASS | compiles cleanly; byte-identical after QA's edit |
+| VR10 JS syntax | PASS | |
+| VR11 / VN2 no-JS | PASS | homes.html: filter buttons hidden, 2 sections and 12 cards visible. 12 model pages: stage, plan and brochure visible, 0 hidden `.reveal` |
+| VN3 subfolder paths | PASS | 0 404s on 12 model pages. Nav and footer `../`. aria-current on Homes |
+| VN9 consistency | PASS | build re-run is byte-identical. Shared head/header/footer come from one template |
+| Video toggle (Frontend fix) | PASS | index, gallery and discover @375/768/1024/1440: not covered by the cookie banner, and clickable |
+| VCR1-4 code review | PASS | the diff matches the list. js.js switcher is generic and guarded. The filter is a progressive enhancement with a hashchange guard. The lightbox focus trap includes the pane only while zoomed. SCSS uses tokens/mixins and adds no `!important` |
+
+#### Bugs found and fixed by QA
+1. **`css/styles.scss:1460-1466` (`.model-block--page .model-head`), recompiled into `css/styles.css`: large layout shift on cold landings on model pages.**
+   - **Cause:** `.model-head` is a wrapping flex row (title block + "Enquire / Book a showing" buttons). Whether the 2-button row fits beside the title depends on text widths. Fraunces/Inter render 5-9 % wider than the fallback fonts (measured), and the fonts are loaded non-blocking. So on a first visit the row fits beside the title at first paint, then wraps under it when the web fonts swap in. That pushes the above-the-fold stage image down about 68 px.
+   - **Measured CLS 0.32-0.42 on a cold load** at every model page at some width: Metallica 1216-1440, Fatboy 1024-1088, Taco/Max/Duke 896, Tucker/Boone/Winchester 960.
+   - **Fix:** on model pages the buttons always sit under the title (`flex-direction: column; align-items: flex-start`). This is the layout the browser already settled on after the font loaded, so nothing changes visually.
+   - **Verified:** 432-load sweep (12 pages × 320-1440 / 32 px). Nothing ≥ 0.05 at ≥ 512 px. Both suites re-run green. The SCSS recompiles byte-identically.
+   - Rejected alternatives, measured: tagline `max-width: 34ch` (13 poor cases left); a flexible title column (15 left).
+
+#### Remaining issues (not fixed, with reasons)
+1. **Site-wide font-swap layout shift on a first visit, at narrow phone widths (about 416-496 px).** Present before this update; last round measured CLS only at 390 px.
+   - **What moves:** the fixed cookie banner (204 → 227 px tall), a quick-stats label, the two-button rows and the model tagline all re-wrap when Fraunces/Inter replace the fallbacks.
+   - **Cold-load CLS:** model pages up to 0.29 @480 and 0.15-0.19 @416-448; register.html 0.25 @480 (untouched by this update); index.html 0.15-0.19 @416-432.
+   - **Navigation with fonts cached: 0.000.**
+   - **Why not fixed here:** a real fix changes how fonts load across the site (a decision from last round), so it needs Senior Web Developer's call.
+   - **QA's measurement of the recommended fix (Windows Chrome):** metric-matched fallback faces cut mean CLS about 10× (model pages 0.033 → 0.004, other pages 0.021 → 0.006) and leave 3 boundary cases ≤ 0.15. Settings tested:
+     - `@font-face` "Fraunces Fallback": `local("Palatino Linotype")`, size-adjust 104.8 % upright and 108.4 % italic.
+     - "Inter Fallback": `local("Segoe UI")`, 106.9 % at 400 and 105.7 % at 600.
+     - The stacks placed directly after the web fonts.
+   - **Alternative:** self-host and preload the two woff2 files with `font-display: optional`.
+   - **Needs a Mac/iOS check** (Iowan Old Style / Palatino metrics).
+2. **QA's 0.02 CLS target missed at 390 px on Taco (0.024) and Max (0.027).** Same root cause as item 1; under the 0.1 "good" threshold.
+3. **Owner items (MODELS.md §6, not code):**
+   - prices and whether they include the lot ("for the home only" vs "incl. GST");
+   - the index "Turnkey homes from $550,000" is below the cheapest Valmont price;
+   - Madonna garage "available";
+   - the Madonna brochure still shows the den as standard;
+   - gallery alt "Horses…" on the Taco photo.
+
+#### Not tested
+- **Hosting:** a real Vercel deployment (`.vercelignore`, headers, 404 routing).
+- **Other browsers and devices:** Safari, Firefox, real iOS/Android devices. Fallback-font metrics differ by OS, so the CLS figures are Windows Chrome only.
+- **Lab and network:** Lighthouse scores, a throttled network.
+- **Assistive technology:** real screen readers.
+- **Social previews:** how Facebook, LinkedIn and X render the new og:images (only dims and URLs were checked).
+- **Search tools:** Google's Rich Results Test for the Product JSON-LD (only structural and number checks were run offline).

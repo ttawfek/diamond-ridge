@@ -668,8 +668,8 @@ em { font-style: italic; }
 
   &:hover { border-color: var(--color-accent); }
 
-  // Phones: top-right, clear of the hero CTAs. Larger screens: bottom-right.
-  @include mq("md") { top: auto; bottom: space("4"); }
+  // Top-right at every width: clear of the hero CTAs, and never covered by the
+  // fixed, bottom-anchored cookie banner (the pause control must stay reachable).
 }
 
 .breadcrumb {
@@ -997,6 +997,10 @@ em { font-style: italic; }
   &--4 {
     @include mq("xl") { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
+
+  &--3 {
+    @include mq("lg") { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
 }
 
 .model {
@@ -1025,6 +1029,21 @@ em { font-style: italic; }
     font-size: fs("sm");
   }
 
+  .m-price {
+    margin-top: space("3");
+    color: var(--color-accent);
+    font-family: var(--font-display);
+    font-size: fs("md");
+    font-variant-numeric: lining-nums;
+
+    span {
+      color: var(--color-text-subtle);
+      font-family: var(--font-body);
+      font-size: fs("xs");
+      letter-spacing: 0.04em;
+    }
+  }
+
   .m-badge {
     display: inline-block;
     margin-left: space("2");
@@ -1041,6 +1060,10 @@ em { font-style: italic; }
     white-space: nowrap;
   }
 }
+
+// Cards that are deep-link targets (homes.html#tucker) clear the sticky header
+.model[id] { scroll-margin-top: calc(var(--header-h) + 1.5rem); }
+.model:target { border-color: var(--color-accent); box-shadow: 0 0 0 2px var(--color-accent), var(--shadow-2); }
 
 a.model:hover {
   transform: translateY(-3px);
@@ -1185,21 +1208,60 @@ a.model:hover {
 
   &.on { display: flex; }
 
+  .lb-pane {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
   img {
     max-width: 96vw;
     max-height: 88vh;
     object-fit: contain;
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-2);
+    cursor: default;
+
+    &.is-zoomable { cursor: zoom-in; }
   }
 
-  .lb-x {
+  // Zoomed: native resolution inside a scrollable pane (pan by scroll / drag / arrows)
+  &.is-zoomed {
+    padding: 0;
+
+    .lb-pane {
+      display: block;
+      overflow: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: 4.5rem space("4") space("6");
+      text-align: center;
+    }
+
+    img {
+      display: inline-block;
+      max-width: none;
+      max-height: none;
+      cursor: zoom-out;
+    }
+  }
+
+  .lb-bar {
     position: absolute;
+    z-index: 1;
     top: space("4");
     right: space("4");
-    width: 2.75rem;
+    display: flex;
+    gap: space("2");
+  }
+
+  .lb-x,
+  .lb-zoom {
+    min-width: 2.75rem;
     height: 2.75rem;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(14, 13, 11, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: var(--radius-pill);
     color: #fff;
@@ -1207,6 +1269,14 @@ a.model:hover {
     line-height: 1;
 
     &:hover { border-color: var(--color-accent); }
+  }
+
+  .lb-zoom {
+    padding: 0 1rem;
+    font-size: fs("sm");
+    font-weight: 600;
+
+    &[hidden] { display: none; }
   }
 }
 
@@ -1257,6 +1327,7 @@ a.model:hover {
   gap: space("5");
   margin-bottom: space("6");
 
+  h1,
   h2 { font-size: fs("3xl"); }
 
   .m-tag {
@@ -1279,7 +1350,8 @@ a.model:hover {
   border-radius: var(--radius-md);
 
   @include mq("md") { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  @include mq("xl") { grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); }
+  // 4-up from lg: 6–8 stats per model fill one or two even rows
+  @include mq("lg") { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
   > * {
     padding: space("4");
@@ -1289,6 +1361,7 @@ a.model:hover {
 
   .qs-num {
     display: block;
+    overflow-wrap: normal;
     color: var(--color-accent);
     font-family: var(--font-display);
     font-size: fs("lg");
@@ -1368,7 +1441,70 @@ a.model:hover {
   border-radius: var(--radius-md);
 
   a { display: block; cursor: zoom-in; }
-  img { width: 100%; }
+
+  img {
+    width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+  }
+}
+
+// Per-model pages (homes/the-<slug>.html): no hero, the model block opens the page
+.model-block--page {
+  padding-top: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  border-top: 0;
+
+  .breadcrumb { margin-bottom: space("6"); }
+  .showcase { margin-bottom: 0; }
+
+  // Buttons always sit under the title. Side by side, whether they fit depended on
+  // the web-font metrics, so the row jumped below the title when Fraunces/Inter
+  // swapped in and pushed the stage image down (CLS 0.3–0.4 on a cold load).
+  .model-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.model-named {
+  margin-top: space("6");
+  padding-left: space("4");
+  border-left: 2px solid var(--color-accent-deep);
+  color: var(--color-text-muted);
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+// Collection filter + section headings (homes.html overview)
+.collection { padding-block: clamp(2.5rem, 1.8rem + 3vw, 4.5rem); }
+.collection-filter {
+  margin-top: space("6");
+
+  .panel-title { margin-bottom: space("2"); }
+}
+
+.collection-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: space("2") space("5");
+  margin-bottom: space("6");
+  padding-bottom: space("4");
+  border-bottom: 1px solid var(--color-line);
+
+  h2 { font-size: fs("2xl"); }
+}
+
+.collection-count {
+  color: var(--color-text-subtle);
+  font-family: var(--font-body);
+  font-size: fs("md");
+}
+
+.collection-meta {
+  color: var(--color-text-muted);
+  font-size: fs("sm");
 }
 
 .spec-cols {

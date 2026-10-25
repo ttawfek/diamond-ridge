@@ -1,0 +1,5 @@
+# Internal files: not part of the public site
+*.md
+tools/
+.vscode/
+localize_assets.py
