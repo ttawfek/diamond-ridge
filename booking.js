@@ -1,10 +1,8 @@
 /* Diamond Ridge — "Book your showing" modal
-   Calendar + enquiry form. On submit, POSTs to Netlify Forms, which records the
-   submission and emails it out automatically. If that fails (e.g. the page is
-   opened as a local file, or the site isn't on Netlify), it falls back to
-   opening the visitor's mail app so a request is never lost. */
+   Calendar + enquiry form. On submit, opens the visitor's mail app with the
+   request pre-filled and addressed to the sales inbox (no server needed). */
 (function () {
-  var RECIPIENT = 'tariktawfek71@hotmail.com';
+  var RECIPIENT = 'info@diamondridgeliving.ca';
   var SLOTS = ['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM'];
   var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var DOW = ['Su','Mo','Tu','We','Th','Fr','Sa'];
@@ -54,15 +52,20 @@
       btn.type = 'button';
       btn.className = 'cal-day';
       btn.textContent = day;
+      btn.setAttribute('aria-label', fmt(d));
+      btn.setAttribute('aria-pressed', 'false');
       if (d < today) btn.disabled = true;
-      if (d.getTime() === today.getTime()) btn.classList.add('today');
-      if (selDate && d.getTime() === selDate.getTime()) btn.classList.add('sel');
+      if (d.getTime() === today.getTime()) { btn.classList.add('today'); btn.setAttribute('aria-current', 'date'); }
+      if (selDate && d.getTime() === selDate.getTime()) { btn.classList.add('sel'); btn.setAttribute('aria-pressed', 'true'); }
       btn.addEventListener('click', (function (dd) {
         return function () {
           selDate = dd;
           renderCal();
+          syncSlots();
           updateSummary();
           err.classList.remove('on');
+          var picked = grid.querySelector('.cal-day.sel');
+          if (picked) picked.focus();
         };
       })(d));
       grid.appendChild(btn);
@@ -70,15 +73,37 @@
     prev.disabled = (viewY === today.getFullYear() && viewM === today.getMonth());
   }
 
+  // minutes since midnight for a slot label like '2:30 PM'
+  function slotMinutes(s) {
+    var m = /^(\d+):(\d+) (AM|PM)$/.exec(s);
+    return (Number(m[1]) % 12 + (m[3] === 'PM' ? 12 : 0)) * 60 + Number(m[2]);
+  }
+
+  // disable time slots that have already passed when today is the chosen date
+  function syncSlots() {
+    var now = new Date();
+    var isToday = selDate && selDate.getTime() === today.getTime();
+    Array.prototype.forEach.call(slotRow.children, function (b) {
+      var past = !!isToday && slotMinutes(b.textContent) <= now.getHours() * 60 + now.getMinutes();
+      b.disabled = past;
+      if (past && selSlot === b.textContent) {
+        selSlot = null;
+        b.classList.remove('sel');
+        b.setAttribute('aria-pressed', 'false');
+      }
+    });
+  }
+
   SLOTS.forEach(function (s) {
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'slot';
     b.textContent = s;
+    b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', function () {
       selSlot = (selSlot === s) ? null : s;
-      Array.prototype.forEach.call(slotRow.children, function (c) { c.classList.remove('sel'); });
-      if (selSlot) b.classList.add('sel');
+      Array.prototype.forEach.call(slotRow.children, function (c) { c.classList.remove('sel'); c.setAttribute('aria-pressed', 'false'); });
+      if (selSlot) { b.classList.add('sel'); b.setAttribute('aria-pressed', 'true'); }
       updateSummary();
     });
     slotRow.appendChild(b);
@@ -93,15 +118,67 @@
     renderCal();
   });
 
-  function open() { overlay.classList.add('on'); document.body.style.overflow = 'hidden'; }
-  function close() { overlay.classList.remove('on'); document.body.style.overflow = ''; }
+  var closeBtn = document.getElementById('bkClose');
+  var lastFocus = null;
+
+  function isOpen() { return overlay.classList.contains('on'); }
+
+  // after a completed request, re-opening starts a fresh booking
+  function resetIfDone() {
+    if (!done.classList.contains('on')) return;
+    done.classList.remove('on');
+    form.style.display = '';
+    document.getElementById('bkCalWrap').style.display = '';
+    document.querySelector('.bk-head').style.display = '';
+    ['bkName', 'bkPhone', 'bkEmail', 'bkNotes', 'bkCompany'].forEach(function (id) { document.getElementById(id).value = ''; });
+    document.getElementById('bkInterest').selectedIndex = 0;
+    selDate = null; selSlot = null;
+    Array.prototype.forEach.call(slotRow.children, function (c) { c.classList.remove('sel'); c.setAttribute('aria-pressed', 'false'); c.disabled = false; });
+    viewY = today.getFullYear(); viewM = today.getMonth();
+    renderCal();
+    updateSummary();
+  }
+
+  function open() {
+    resetIfDone();
+    lastFocus = document.activeElement;
+    overlay.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+  function close() {
+    if (!isOpen()) return;
+    overlay.classList.remove('on');
+    document.body.style.overflow = '';
+    // drop the #book deep-link hash so a reload doesn't reopen the dialog
+    if (location.hash === '#book' && window.history && history.replaceState) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  // keep keyboard focus inside the dialog while it is open
+  function trapFocus(e) {
+    var nodes = Array.prototype.filter.call(
+      overlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'),
+      function (n) { return !n.disabled && n.tabIndex !== -1 && n.offsetParent !== null; }
+    );
+    if (!nodes.length) return;
+    var first = nodes[0], last = nodes[nodes.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !overlay.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+  }
 
   document.querySelectorAll('[data-book]').forEach(function (b) {
     b.addEventListener('click', function (e) { e.preventDefault(); open(); });
   });
-  document.getElementById('bkClose').addEventListener('click', close);
+  closeBtn.addEventListener('click', close);
   overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  document.addEventListener('keydown', function (e) {
+    if (!isOpen()) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'Tab') trapFocus(e);
+  });
 
   function showDone(msg) {
     form.style.display = 'none';
@@ -109,9 +186,11 @@
     document.querySelector('.bk-head').style.display = 'none';
     if (msg) document.getElementById('bkDoneMsg').textContent = msg;
     done.classList.add('on');
+    var doneTitle = done.querySelector('h2');
+    if (doneTitle) doneTitle.focus();
   }
 
-  function mailtoFallback(p) {
+  function sendByEmail(p) {
     var subject = 'Showing request \u2014 ' + p.name + ' \u2014 ' + p.date;
     var body =
       'SHOWING REQUEST' +
@@ -152,43 +231,15 @@
     }
     err.classList.remove('on');
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending\u2026';
+    // honeypot filled in: a bot, so skip the email but look successful
+    if (payload.company) { showDone(); return; }
 
-    var encoded = new URLSearchParams({
-      'form-name': 'showing-request',
-      name: payload.name,
-      phone: payload.phone,
-      email: payload.email,
-      date: payload.date,
-      time: payload.time || 'No preference',
-      interest: payload.interest,
-      notes: payload.notes,
-      'bot-field': payload.company
-    }).toString();
-
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: encoded
-    })
-      .then(function (r) { return r.ok; })
-      .then(function (ok) {
-        if (ok) {
-          showDone('Thanks \u2014 your showing request has been sent. We\u2019ll confirm your appointment within one business day.');
-        } else {
-          mailtoFallback(payload);
-        }
-      })
-      .catch(function () {
-        mailtoFallback(payload);
-      })
-      .then(function () {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Request this showing';
-      });
+    sendByEmail(payload);
   });
 
   renderCal();
   updateSummary();
+
+  // deep link from other pages: index.html#book opens the booking dialog
+  if (location.hash === '#book') open();
 })();

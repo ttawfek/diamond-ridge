@@ -1,30 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-CA">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Register Your Interest | Diamond Ridge</title>
 <meta name="description" content="Register your interest in Diamond Ridge — Phase 1 homesites in Diamond Valley, Alberta. We'll follow up within 24 hours.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://diamondridgeliving.ca/register.html">
+<meta name="theme-color" content="#0e0d0b">
+<meta name="color-scheme" content="dark">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#1D1B16">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Diamond Ridge">
+<meta property="og:locale" content="en_CA">
 <meta property="og:title" content="Register Your Interest | Diamond Ridge">
 <meta property="og:description" content="Register for Phase 1 homesites at Diamond Ridge. We follow up within 24 hours.">
-<meta property="og:image" content="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a0525a18f782ffc3dcf380e_Epicwideshot.jpg">
-<meta property="og:url" content="https://diamondridge-demo.netlify.app/register.html">
+<meta property="og:url" content="https://diamondridgeliving.ca/register.html">
+<meta property="og:image" content="https://diamondridgeliving.ca/assets/og/diamond-ridge-og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Homes at Diamond Ridge near the grassy ridge, with the Rocky Mountains beyond">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Register Your Interest | Diamond Ridge">
 <meta name="twitter:description" content="Register for Phase 1 homesites at Diamond Ridge. We follow up within 24 hours.">
-<meta name="twitter:image" content="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a0525a18f782ffc3dcf380e_Epicwideshot.jpg">
+<meta name="twitter:image" content="https://diamondridgeliving.ca/assets/og/diamond-ridge-og.jpg">
+<meta name="twitter:image:alt" content="Homes at Diamond Ridge near the grassy ridge, with the Rocky Mountains beyond">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,470;0,9..144,600;1,9..144,420&family=Work+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
-<!-- Meta Pixel Code -->
+<link rel="preconnect" href="https://cdn.prod.website-files.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap"></noscript>
+<link rel="stylesheet" href="css/styles.css">
+<script src="js.js" defer></script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Home",
+   "item": "https://diamondridgeliving.ca/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Register",
+   "item": "https://diamondridgeliving.ca/register.html"
+  }
+ ]
+}
+</script>
+<!-- Meta Pixel Code: only loads after the visitor accepts cookies (banner in js.js) -->
 <script>
+window.loadMetaPixel = function () {
 !function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -35,86 +67,57 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '1094211403028014');
 fbq('track', 'PageView');
+};
+try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMetaPixel(); } catch (e) {}
 </script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1094211403028014&ev=PageView&noscript=1"
-/></noscript>
 <!-- End Meta Pixel Code -->
 </head>
 <body>
-
-<header>
-  <nav class="nav">
-    <a href="index.html" class="logo">
-      <img src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a0b18b269179d5a0bf7e6da_69d9ae9cdef24e73126a56aa_Title%20(1).png" alt="Diamond Ridge">
-    </a>
-    <div class="nav-links">
-      <a href="discover.html">Discover</a>
-      <a href="homes.html">Homes</a>
-      <a href="builders.html">Builders</a>
-      <a href="developer.html">Developer</a>
-      <a href="gallery.html">Gallery</a>
-      <a href="contact.html">Contact</a>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" class="logo"><img src="assets/brand/diamond-ridge-logo.png" alt="Diamond Ridge — home" width="158" height="128" decoding="async"></a>
+    <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="navPanel"><span class="visually-hidden">Menu</span><span class="nav-toggle-bars" aria-hidden="true"><span></span><span></span><span></span></span></button>
+    <div class="nav-panel" id="navPanel">
+      <ul class="nav-links" role="list">
+        <li><a href="homes.html">Homes</a></li>
+        <li><a href="builders.html">Builders</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="discover.html">Discover</a></li>
+        <li><a href="developer.html">Developer</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-panel-cta">
+        <a href="index.html#book" class="btn btn-ghost">Book a showing</a>
+      </div>
     </div>
-    <button class="theme-toggle" data-toggle-theme aria-label="Toggle dark mode"><span class="dot"></span><span class="tt-label">Dark</span></button>
-    <a href="register.html" class="btn btn-solid">Register</a>
-    <button class="burger" id="burger" aria-label="Open menu"><span></span><span></span><span></span></button>
+    <a href="register.html" class="btn btn-solid btn-sm nav-cta" aria-current="page">Register</a>
   </nav>
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="discover.html">Discover</a>
-    <a href="homes.html">Homes</a>
-    <a href="builders.html">Builders</a>
-    <a href="developer.html">Developer</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="contact.html">Contact</a>
-    <button class="theme-toggle" data-toggle-theme aria-label="Toggle dark mode"><span class="dot"></span><span class="tt-label">Dark</span></button>
-    <a href="register.html" class="btn btn-solid">Register</a>
-  </div>
 </header>
 
-<main>
+<main id="main">
 
-  <section class="page-hero" style="padding:0; min-height:40vh;">
-    <img class="bg" src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a0525a18f782ffc3dcf380e_Epicwideshot.jpg" alt="Homes near the grassy ridge with mountains beyond" loading="lazy">
+  <section class="hero hero--short">
+    <img class="hero-media" src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a0525a18f782ffc3dcf380e_Epicwideshot.jpg" alt="Homes near the grassy ridge with mountains beyond" fetchpriority="high" width="3840" height="2160" decoding="async">
     <div class="hero-content">
-      <div class="hero-kicker">Phase 1 · Now selling</div>
+      <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="index.html">Home</a></li><li><span aria-current="page">Register</span></li></ol></nav>
+      <p class="hero-kicker">Phase 1 · Now selling</p>
       <h1>Register your interest</h1>
     </div>
   </section>
 
-  <section>
+  <section class="section">
     <div class="wrap">
-      <div class="split" style="align-items:start;">
+      <div class="split split--top">
         <div class="reveal">
-          <div class="eyebrow">What happens next</div>
-          <h2 style="font-size:clamp(30px,3.8vw,44px);">Three steps. No pressure.</h2>
-          <div class="process-steps" style="grid-template-columns:1fr; margin-top:36px; background:var(--line);">
-            <div class="step" style="background:var(--white);">
-              <span class="stepnum" style="color:rgba(36,35,32,0.12);">01</span>
-              <h3 style="color:var(--ink);">Register your interest</h3>
-              <p style="color:var(--ink-soft);">Tell us what kind of homesite suits the life you have in mind, and we'll send the Phase 1 details that match.</p>
-            </div>
-            <div class="step" style="background:var(--white);">
-              <span class="stepnum" style="color:rgba(36,35,32,0.12);">02</span>
-              <h3 style="color:var(--ink);">A conversation with our team</h3>
-              <p style="color:var(--ink-soft);">Within 24 hours — a walk through what's currently available and where you'd fit.</p>
-            </div>
-            <div class="step" style="background:var(--white);">
-              <span class="stepnum" style="color:rgba(36,35,32,0.12);">03</span>
-              <h3 style="color:var(--ink);">Reserve your homesite</h3>
-              <p style="color:var(--ink-soft);">A refundable deposit holds it while paperwork moves. Full process explained at the table.</p>
-            </div>
-          </div>
-        </div>
-        <div class="reveal">
-          <div class="card" style="padding:36px;">
-            <h3 style="margin-bottom:8px;">Tell us about you</h3>
-            <p class="desc" style="color:var(--ink-soft); font-size:14px; margin-bottom:24px;">We'll reach out within one business day.</p>
-            <form class="form-grid" action="mailto:info@diamondridgeliving.ca" method="post" enctype="text/plain" style="grid-template-columns:1fr 1fr;">
-              <div><label for="r-fname">First name</label><input id="r-fname" name="first_name" type="text" required></div>
-              <div><label for="r-lname">Last name</label><input id="r-lname" name="last_name" type="text" required></div>
-              <div class="full"><label for="r-email">Email</label><input id="r-email" name="email" type="email" required></div>
-              <div class="full"><label for="r-phone">Phone</label><input id="r-phone" name="phone" type="tel"></div>
+          <div class="card card--form">
+            <h2>Tell us about you</h2>
+            <p class="form-note">We'll reach out within one business day. Fields marked <span class="req" aria-hidden="true">*</span><span class="visually-hidden">with an asterisk</span> are required.</p>
+            <form class="form-grid form-grid--2 mt-5" action="mailto:info@diamondridgeliving.ca" method="post" enctype="text/plain">
+              <div><label for="r-fname">First name <span class="req" aria-hidden="true">*</span></label><input id="r-fname" name="first_name" type="text" autocomplete="given-name" required></div>
+              <div><label for="r-lname">Last name <span class="req" aria-hidden="true">*</span></label><input id="r-lname" name="last_name" type="text" autocomplete="family-name" required></div>
+              <div class="full"><label for="r-email">Email <span class="req" aria-hidden="true">*</span></label><input id="r-email" name="email" type="email" autocomplete="email" required></div>
+              <div class="full"><label for="r-phone">Phone</label><input id="r-phone" name="phone" type="tel" autocomplete="tel"></div>
               <div class="full">
                 <label for="r-interest">I'm interested in</label>
                 <select id="r-interest" name="interest">
@@ -126,10 +129,31 @@ src="https://www.facebook.com/tr?id=1094211403028014&ev=PageView&noscript=1"
                 </select>
               </div>
               <div class="full"><label for="r-msg">Anything else we should know? (optional)</label><textarea id="r-msg" name="message"></textarea></div>
-              <div class="full"><button type="submit" class="btn btn-solid" style="width:100%; justify-content:center;">Register</button></div>
+              <div class="full"><button type="submit" class="btn btn-solid btn-block">Register</button></div>
             </form>
-            <p style="font-size:12px; color:var(--ink-soft); margin-top:16px;">Prefer to talk? Call or WhatsApp <a href="tel:+14036361855" style="text-decoration:underline;">1 (403) 636-1855</a>.</p>
+            <p class="form-note">Prefer to talk? Call or WhatsApp <a href="tel:+14036361855">1 (403) 636-1855</a>, or <a href="index.html#book">book a showing</a>.</p>
           </div>
+        </div>
+        <div class="split-lead reveal">
+          <p class="eyebrow">What happens next</p>
+          <h2>Three steps. No pressure.</h2>
+          <ol class="process-steps process-steps--stack mt-6" role="list">
+            <li class="step">
+              <span class="stepnum" aria-hidden="true">01</span>
+              <h3>Register your interest</h3>
+              <p>Tell us what kind of homesite suits the life you have in mind, and we'll send the Phase 1 details that match.</p>
+            </li>
+            <li class="step">
+              <span class="stepnum" aria-hidden="true">02</span>
+              <h3>A conversation with our team</h3>
+              <p>Within 24 hours — a walk through what's currently available and where you'd fit.</p>
+            </li>
+            <li class="step">
+              <span class="stepnum" aria-hidden="true">03</span>
+              <h3>Reserve your homesite</h3>
+              <p>A refundable deposit holds it while paperwork moves. Full process explained at the table.</p>
+            </li>
+          </ol>
         </div>
       </div>
     </div>
@@ -137,35 +161,60 @@ src="https://www.facebook.com/tr?id=1094211403028014&ev=PageView&noscript=1"
 
 </main>
 
-<footer>
+<footer class="site-footer">
   <div class="wrap">
     <div class="footer-top">
-      <h3 class="footer-tagline">Shaped by the land, strengthened by community.</h3>
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><img src="assets/brand/diamond-ridge-logo.png" alt="Diamond Ridge — home" loading="lazy" width="158" height="128" decoding="async"></a>
+        <p class="footer-tagline">Shaped by the land, strengthened by community.</p>
+        <div class="btn-row">
+          <a href="register.html" class="btn btn-solid">Register your interest</a>
+          <a href="index.html#book" class="btn btn-ghost">Book a showing</a>
+        </div>
+      </div>
+      <nav class="footer-nav" aria-label="Footer">
+        <h2 class="footer-heading">Explore</h2>
+        <ul role="list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="homes.html">Homes</a></li>
+          <li><a href="builders.html">Builders</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="discover.html">Discover</a></li>
+          <li><a href="developer.html">Developer</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="register.html">Register</a></li>
+        </ul>
+      </nav>
       <div class="footer-contact">
-        <div class="row"><span class="k">Phone</span><span>1 (403) 636-1855 (also WhatsApp)</span></div>
-        <div class="row"><span class="k">Email</span><span><a href="mailto:info@diamondridgeliving.ca" style="text-decoration:underline;">info@diamondridgeliving.ca</a></span></div>
-        <div class="row"><span class="k">Address</span><span>460 Main Street, Diamond Valley, AB T0L 2A0</span></div>
-        <a href="contact.html" class="btn btn-solid" style="margin-top:8px;">Contact</a>
+        <h2 class="footer-heading">Get in touch</h2>
+        <address class="contact-list">
+          <div class="row"><span class="k">Phone</span><span><a href="tel:+14036361855">1 (403) 636-1855</a> (also WhatsApp)</span></div>
+          <div class="row"><span class="k">Email</span><span><a href="mailto:info@diamondridgeliving.ca">info@diamondridgeliving.ca</a></span></div>
+          <div class="row"><span class="k">Address</span><span>460 Main Street, Diamond Valley, AB T0L 2A0</span></div>
+        </address>
+        <a href="contact.html" class="btn btn-ghost mt-5">Contact us</a>
       </div>
     </div>
-    <div class="footer-legal">
+    <p class="footer-legal">
       Diamond Ridge is a residential land development. Renderings, images, and floor plans are artist's conceptions and approximate. Pricing, lot sizes, and availability are subject to change without notice. This is not an offer to sell or a solicitation to purchase. E&amp;OE. Marketing services provided by Root9 Marketing Ltd. on behalf of the developer.
-    </div>
+    </p>
     <div class="powered">
       <span class="pb-text">Powered by Imperial Real Estate Group — Century 21 Bravo Realty</span>
       <span class="pb-logos">
-        <span class="pb-tile"><img src="assets/brand/imperial-reg.jpg" alt="Imperial Real Estate Group" loading="lazy"></span>
-        <span class="pb-tile"><img src="assets/brand/c21-bravo-wordmark.jpg" alt="Century 21 Bravo Realty" loading="lazy"></span>
+        <span class="pb-tile"><img src="assets/brand/imperial-reg.jpg" alt="Imperial Real Estate Group" loading="lazy" width="600" height="280" decoding="async"></span>
+        <span class="pb-tile"><img src="assets/brand/c21-bravo-wordmark.jpg" alt="Century 21 Bravo Realty" loading="lazy" width="600" height="280" decoding="async"></span>
       </span>
     </div>
     <div class="footer-bottom">
       <span>© Root9 Marketing Ltd.</span>
-      <a href="https://www.diamondridgeliving.ca/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
-      <a href="https://www.root9marketing.com" target="_blank" rel="noopener"><img src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/69d9b1f2cb2df0a1f32e0fd2_Title%20(5).png" alt="Root9 Marketing" loading="lazy"></a>
+      <div class="footer-links">
+        <button type="button" class="footer-cookie" data-cookie-settings>Cookie settings</button>
+        <a href="https://www.diamondridgeliving.ca/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy<span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a href="https://www.root9marketing.com" target="_blank" rel="noopener noreferrer"><img src="assets/brand/root9-logo.png" alt="Root9 Marketing (opens in a new tab)" loading="lazy" width="88" height="96" decoding="async"></a>
+      </div>
     </div>
   </div>
 </footer>
 
-<script src="js.js"></script>
 </body>
 </html>
