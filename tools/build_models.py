@@ -101,7 +101,7 @@ def up(fragment):
     return REL_URL.sub(lambda m: '%s="../%s"' % (m.group(1), m.group(2)), fragment)
 
 
-HEAD_LINKS = grab(r'<link rel="preconnect" href="https://fonts.googleapis.com">.*?<script src="js.js" defer></script>')
+HEAD_LINKS = grab(r'<link rel="preconnect" href="https://fonts.googleapis.com">.*?<script src="js.js(?:\?v=[^"]*)?" defer></script>')
 HEAD_LINKS = '\n'.join(l for l in HEAD_LINKS.split('\n') if 'cdn.prod.website-files.com' not in l)
 PIXEL = grab(r'<!-- Meta Pixel Code.*?<!-- End Meta Pixel Code -->')
 HEADER = grab(r'<header class="site-header">.*?</header>')

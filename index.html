@@ -29,12 +29,12 @@
 <meta name="twitter:image:alt" content="Homes at Diamond Ridge near the grassy ridge, with the Rocky Mountains beyond">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://cdn.prod.website-files.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap"></noscript>
-<link rel="stylesheet" href="css/styles.css">
-<script src="js.js" defer></script>
+<link rel="stylesheet" href="css/styles.css?v=20261027i">
+<script src="js.js?v=20261027i" defer></script>
 <script src="booking.js" defer></script>
+<script src="motion.js?v=20261027i" defer></script>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -133,33 +133,40 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
 
   <!-- HERO -->
   <section class="hero hero--home">
-    <img class="hero-media" src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a053e804ff53b42774262ea_DiamondValleyBanner.png" alt="Sunset over the foothills and river valley near Diamond Valley, Alberta" fetchpriority="high" width="1200" height="630" decoding="async">
+    <img class="hero-media" src="assets/home/hero-valley-1200.webp" srcset="assets/home/hero-valley-800.webp 800w, assets/home/hero-valley-1200.webp 1200w" sizes="100vw" alt="Sunset over the foothills and river valley near Diamond Valley, Alberta" fetchpriority="high" width="1200" height="630" decoding="async">
     <video class="hero-media hero-video" data-hero-video muted loop playsinline preload="none" aria-hidden="true">
       <source src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47%2F69ea901d9b4c0bf1eb7a34f7_Diamond%20Valley%204%20sec%20_mp4.mp4" type="video/mp4">
     </video>
     <div class="hero-content">
       <p class="hero-kicker">Diamond Valley, Alberta · Phase 1 Now Selling</p>
-      <h1>Diamond Ridge.<br>This is real <em>luxury.</em></h1>
+      <h1><span class="hero-line">Diamond Ridge.</span> <span class="hero-line">This is real <em>luxury.</em></span></h1>
       <p class="hero-sub">229 estate homesites set against the Alberta foothills, 30 minutes from Calgary's city limits. Wide walkable streets, and views nobody can build in front of.</p>
       <div class="btn-row hero-actions">
         <a href="register.html" data-book class="btn btn-solid">Book your showing</a>
         <a href="register.html" class="btn btn-ghost">Register your interest</a>
       </div>
     </div>
-    <button type="button" class="video-toggle" data-video-toggle hidden>Pause video</button>
   </section>
 
   <!-- STAT STRIP -->
   <div class="stat-strip">
     <div class="wrap">
-      <ul class="stat-grid" role="list" aria-label="Phase 1 at a glance">
-        <li class="stat"><span class="num">11</span><span class="lbl">Homesites available</span></li>
+      <ul class="stat-grid reveal-stagger" role="list" aria-label="Phase 1 at a glance">
+        <li class="stat"><span class="num" data-count>11</span><span class="lbl">Homesites available</span></li>
         <li class="stat"><span class="num">14×35m</span><span class="lbl">Lot size + laneway</span></li>
-        <li class="stat"><span class="num">$150K</span><span class="lbl">Lots priced from</span></li>
-        <li class="stat"><span class="num">2</span><span class="lbl">Builders inside</span></li>
+        <li class="stat"><span class="num" data-count>$150K</span><span class="lbl">Lots priced from</span></li>
+        <li class="stat"><span class="num" data-count>2</span><span class="lbl">Builders inside</span></li>
         <li class="stat"><span class="num">06 / 26</span><span class="lbl">First showhomes</span></li>
-        <li class="stat"><span class="num">~30min</span><span class="lbl">To Calgary</span></li>
+        <li class="stat"><span class="num" data-count>~30min</span><span class="lbl">To Calgary</span></li>
       </ul>
+    </div>
+  </div>
+
+  <!-- RIBBON (decorative: every phrase is stated elsewhere on the page) -->
+  <div class="ribbon" aria-hidden="true">
+    <div class="ribbon-track">
+      <div class="ribbon-group"><span>Phase 1 now selling</span><i></i><span>229 estate homesites</span><i></i><span>Lots from $150,000</span><i></i><span>Turnkey homes from $550,000</span><i></i><span>Four showhomes open</span><i></i><span>30 minutes to Calgary</span><i></i></div>
+      <div class="ribbon-group"><span>Phase 1 now selling</span><i></i><span>229 estate homesites</span><i></i><span>Lots from $150,000</span><i></i><span>Turnkey homes from $550,000</span><i></i><span>Four showhomes open</span><i></i><span>30 minutes to Calgary</span><i></i></div>
     </div>
   </div>
 
@@ -171,7 +178,7 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
         <h2>Competitive pricing for the first phase.</h2>
         <p class="lede">Two ways in: a serviced lot to build on your own timeline, or a turnkey home built end to end by Albion Homes or Valmont Custom Homes.</p>
       </div>
-      <div class="price-cols reveal">
+      <div class="price-cols reveal-stagger">
         <article class="price-card">
           <span class="price-eyebrow">Land only</span>
           <h3>Serviced homesites</h3>
@@ -206,20 +213,27 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
   <!-- SHOWHOMES -->
   <section class="section section--alt">
     <div class="wrap">
-      <div class="split">
+      <div class="split split--top">
         <div class="reveal">
           <p class="eyebrow">Open now</p>
           <h2>Four showhomes.<br>Walk the land first.</h2>
+        </div>
+        <div class="reveal">
           <p class="lede">The first chance to walk the ground, see what's been built so far, and understand how a home sits inside this place — not how it sits inside a brochure.</p>
           <p class="lede lede--italic">Visits are by appointment. Pick a date below and we'll confirm within one business day.</p>
           <div class="btn-row mt-6">
             <a href="register.html" data-book class="btn btn-solid">Book your showing</a>
-            <a href="register.html" class="btn btn-ghost">Register your interest</a>
           </div>
         </div>
-        <div class="reveal">
-          <img class="media-frame" src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a57e507a4f2bdcad4ac21ac_Site8.png" alt="Diamond Ridge site, Phase 1" loading="lazy" width="1922" height="872" decoding="async">
-        </div>
+      </div>
+    </div>
+    <!-- scroll scene (motion.js): the frame grows to full screen while the stage is pinned -->
+    <div class="expand" data-expand>
+      <div class="expand-stage reveal-wipe">
+        <figure class="expand-frame">
+          <img src="assets/home/site-phase1-1920.webp" srcset="assets/home/site-phase1-960.webp 960w, assets/home/site-phase1-1920.webp 1920w" sizes="100vw" alt="Diamond Ridge site, Phase 1" loading="lazy" width="1920" height="871" decoding="async">
+          <figcaption class="expand-cap"><span class="eyebrow">Phase 1</span><span class="expand-title">Built here, not in a brochure.</span></figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -232,7 +246,7 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
         <h2>The Valmont Custom Home Collection.</h2>
         <p class="lede">Twelve designs from Valmont Custom Homes: seven bungalows and five two-storey plans, from 1,100 to 2,990 sq ft, each named for an animal raised on the developer’s own ranch here in Diamond Valley. Every plan comes with exterior elevations, interior renderings, full floor plans, and a downloadable brochure.</p>
       </div>
-      <div class="model-grid model-grid--4 reveal">
+      <div class="model-grid model-grid--4 reveal-stagger reveal-stagger--tilt">
         <!-- BEGIN:featured (generated by tools/build_models.py) -->
         <a class="model" href="homes/the-tucker.html">
           <img src="assets/models/tucker-card.webp" alt="The Tucker bungalow, exterior elevation A" loading="lazy" width="800" height="600" decoding="async">
@@ -270,7 +284,6 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
       </div>
       <div class="btn-row mt-6 reveal">
         <a href="homes.html" class="btn btn-ghost">Explore all twelve homes</a>
-        <a href="gallery.html" class="btn-link">Browse the gallery</a>
       </div>
     </div>
   </section>
@@ -283,9 +296,9 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
         <h2>Two builders. One standard.</h2>
         <p class="lede">Every home at Diamond Ridge is built by one of two teams — Albion Homes, with four decades of institutional craft and an in-house architecture studio, and Valmont Custom Homes, with a custom collection drawn for these lots.</p>
       </div>
-      <div class="card-grid-2 reveal">
+      <div class="card-grid-2 reveal-stagger">
         <article class="card">
-          <img class="portrait" src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a055190f0d08d10a1fe13fd_Alder.png" alt="Albion Homes — Alder model" loading="lazy" width="390" height="390" decoding="async">
+          <img class="portrait" src="assets/home/albion-alder-390.webp" alt="Albion Homes — Alder model" loading="lazy" width="390" height="390" decoding="async">
           <span class="b-eyebrow">Albion Homes · 60+ years combined experience</span>
           <h3>Albion Homes</h3>
           <span class="tagline">Crafted for living, designed for you.</span>
@@ -313,7 +326,7 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
         <h2>Phase 1 is selling now.</h2>
         <p class="lede">As each phase sells, those lots are gone. If a location, view, or lot size catches your eye, it's worth exploring while it's still available.</p>
       </div>
-      <ol class="process-steps reveal" role="list">
+      <ol class="process-steps process-steps--track reveal-stagger" role="list">
         <li class="step">
           <span class="stepnum" aria-hidden="true">01</span>
           <h3>Register your interest</h3>
@@ -331,8 +344,7 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
         </li>
       </ol>
       <div class="btn-row mt-7 reveal">
-        <a href="register.html" class="btn btn-solid">Register</a>
-        <a href="register.html" data-book class="btn btn-ghost">Book your showing</a>
+        <a href="register.html" class="btn btn-solid">Register your interest</a>
       </div>
     </div>
   </section>
@@ -349,12 +361,18 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
             <a href="discover.html" class="btn btn-ghost">Discover Diamond Valley</a>
           </div>
         </div>
-        <div class="reveal">
-          <img class="media-frame" src="https://cdn.prod.website-files.com/69d7e0b614106c9ea832bd47/6a5628f53deedcc83bdbb014_Your%20paragraph%20text%20(8).png" alt="Diamond Ridge Phase 1 lot availability map along Flare Avenue SW, showing sold lots, Albion lots and showhomes" loading="lazy" width="1200" height="800" decoding="async">
+        <div class="reveal-wipe">
+          <img class="media-frame" src="assets/home/lot-map-1200.webp" alt="Diamond Ridge Phase 1 lot availability map along Flare Avenue SW, showing sold lots, Albion lots and showhomes" loading="lazy" width="1200" height="800" decoding="async">
         </div>
       </div>
-      <div class="map-frame mt-7 reveal">
-        <iframe src="https://www.google.com/maps?q=Diamond+Ridge+Diamond+Valley+Alberta&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map of Diamond Ridge, Diamond Valley, Alberta"></iframe>
+      <!-- the Google embed (~1.6 MB of script) loads only when asked for; js.js swaps it in -->
+      <div class="map-frame map-facade mt-7 reveal" data-map-src="https://www.google.com/maps?q=Diamond+Ridge+Diamond+Valley+Alberta&amp;output=embed" data-map-title="Map of Diamond Ridge, Diamond Valley, Alberta">
+        <a class="map-load" href="https://www.google.com/maps?q=Diamond+Ridge+Diamond+Valley+Alberta" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+          <span>Show the interactive map</span>
+          <small>Diamond Ridge, Diamond Valley, Alberta</small>
+          <span class="visually-hidden" data-map-newtab> (opens Google Maps in a new tab)</span>
+        </a>
       </div>
     </div>
   </section>
@@ -367,10 +385,6 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
       <div class="footer-brand">
         <a href="index.html" class="logo"><img src="assets/brand/diamond-ridge-logo.png" alt="Diamond Ridge — home" loading="lazy" width="158" height="128" decoding="async"></a>
         <p class="footer-tagline">Shaped by the land, strengthened by community.</p>
-        <div class="btn-row">
-          <a href="register.html" class="btn btn-solid">Register your interest</a>
-          <a href="register.html" data-book class="btn btn-ghost">Book a showing</a>
-        </div>
       </div>
       <nav class="footer-nav" aria-label="Footer">
         <h2 class="footer-heading">Explore</h2>
@@ -392,7 +406,6 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
           <div class="row"><span class="k">Email</span><span><a href="mailto:info@diamondridgeliving.ca">info@diamondridgeliving.ca</a></span></div>
           <div class="row"><span class="k">Address</span><span>460 Main Street, Diamond Valley, AB T0L 2A0</span></div>
         </address>
-        <a href="contact.html" class="btn btn-ghost mt-5">Contact us</a>
       </div>
     </div>
     <p class="footer-legal">

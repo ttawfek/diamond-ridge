@@ -16,8 +16,12 @@ if (header && burger) {
   if (wide.addEventListener) wide.addEventListener('change', onWide); else wide.addListener(onWide);
 }
 
-// scroll reveal (progressive enhancement: content is visible without JS)
-const reveals = document.querySelectorAll('.reveal');
+// scroll reveal (progressive enhancement: content is visible without JS).
+// .reveal-stagger reveals its children one after another (--i drives the delay).
+document.querySelectorAll('.reveal-stagger').forEach(el => {
+  [...el.children].forEach((child, i) => child.style.setProperty('--i', i));
+});
+const reveals = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-wipe');
 if ('IntersectionObserver' in window) {
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
@@ -29,20 +33,47 @@ if ('IntersectionObserver' in window) {
   reveals.forEach(el => el.classList.add('in'));
 }
 
-// hero background videos: only play when motion is welcome; pause control (WCAG 2.2.2)
+// hero background videos: only play when motion is welcome
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 document.querySelectorAll('[data-hero-video]').forEach(video => {
-  const btn = video.parentElement.querySelector('[data-video-toggle]');
-  video.addEventListener('playing', () => {
-    video.classList.add('is-playing');
-    if (btn) { btn.hidden = false; btn.textContent = 'Pause video'; }
-  });
-  video.addEventListener('pause', () => { if (btn) btn.textContent = 'Play video'; });
-  if (btn) btn.addEventListener('click', () => { if (video.paused) video.play(); else video.pause(); });
-  if (!reduceMotion) {
-    const p = video.play();
-    if (p && p.catch) p.catch(() => {});
+  video.addEventListener('playing', () => video.classList.add('is-playing'));
+  // start once the hero image is in, so the video never competes with it for bandwidth,
+  // and skip it entirely when the visitor has asked to save data
+  const saveData = navigator.connection && navigator.connection.saveData;
+  if (!reduceMotion && !saveData) {
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      const p = video.play();
+      if (p && p.catch) p.catch(() => {});
+    };
+    const still = video.parentElement.querySelector('img.hero-media');
+    if (!still || still.complete) start();
+    else {
+      still.addEventListener('load', start, { once: true });
+      still.addEventListener('error', start, { once: true });
+    }
   }
+});
+
+// map facade: without JS the link opens Google Maps; with JS a click swaps the embed in place
+document.querySelectorAll('[data-map-src]').forEach(box => {
+  const link = box.querySelector('.map-load');
+  if (!link) return;
+  const note = link.querySelector('[data-map-newtab]');
+  if (note) note.remove();
+  link.removeAttribute('target');
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const frame = document.createElement('iframe');
+    frame.src = box.dataset.mapSrc;
+    frame.title = box.dataset.mapTitle || 'Map';
+    frame.referrerPolicy = 'no-referrer-when-downgrade';
+    box.classList.remove('map-facade');
+    box.replaceChildren(frame);
+    frame.focus();
+  });
 });
 
 // image / floor-plan switcher (model pages): buttons carry data-target, data-src, data-cap,

@@ -1,6 +1,7 @@
 // =============================================================================
 // Diamond Ridge — dark theme stylesheet (source)
 // Compile:  npx sass css/styles.scss css/styles.css --style=compressed --no-source-map
+// Then bump the ?v= on every page's styles.css / js.js link so browsers drop cached copies.
 // Mobile-first. Breakpoints: sm 30em · md 48em · lg 60em · xl 75em
 // =============================================================================
 
@@ -17,15 +18,17 @@ $color-bg-alt:        #15130f;
 $color-surface:       #1a1814;
 $color-surface-2:     #221f1a;
 $color-surface-3:     #2c2821;
+$color-card:          #332e26;   // raised cards: a lifted shade of the page's warm black
+$color-card-edge:     rgba(242, 236, 223, 0.1);
 $color-text:          #f2ecdf;   // 16.9:1 on bg
 $color-text-muted:    #c4baa5;   // 10.0:1 on bg
-$color-text-subtle:   #a59b87;   //  6.9:1 on bg, 5.8:1 on surface-2
+$color-text-subtle:   #a59b87;   //  6.9:1 on bg, 5.8:1 on surface-2, 4.9:1 on card
 $color-accent:        #d8b26b;   //  9.6:1 on bg
 $color-accent-strong: #ecca8c;
 $color-accent-deep:   #b8893f;
 $color-on-accent:     #17130c;   //  >= 7:1 on the gold gradient
-$color-sage:          #a3b385;
-$color-sage-surface:  #1d2318;
+$color-mist:          #dcdad6;   // neutral light grey for highlights on dark
+$color-glow:          rgba(255, 255, 255, 0.08); // soft white light in gradients
 $color-danger:        #f4a088;
 $color-plan-paper:    #f6f3ec;
 $color-line:          rgba(242, 236, 223, 0.12);
@@ -105,6 +108,8 @@ $breakpoints: (
   --color-surface: #{$color-surface};
   --color-surface-2: #{$color-surface-2};
   --color-surface-3: #{$color-surface-3};
+  --color-card: #{$color-card};
+  --color-card-edge: #{$color-card-edge};
   --color-text: #{$color-text};
   --color-text-muted: #{$color-text-muted};
   --color-text-subtle: #{$color-text-subtle};
@@ -112,8 +117,8 @@ $breakpoints: (
   --color-accent-strong: #{$color-accent-strong};
   --color-accent-deep: #{$color-accent-deep};
   --color-on-accent: #{$color-on-accent};
-  --color-sage: #{$color-sage};
-  --color-sage-surface: #{$color-sage-surface};
+  --color-mist: #{$color-mist};
+  --color-glow: #{$color-glow};
   --color-danger: #{$color-danger};
   --color-line: #{$color-line};
   --color-line-strong: #{$color-line-strong};
@@ -294,6 +299,41 @@ em { font-style: italic; }
     transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
   }
   .reveal.in { opacity: 1; transform: none; }
+
+  // Children rise in one after another (js.js sets --i). Keyframes animate the
+  // individual translate/rotate properties so `transform` stays free for hovers.
+  .reveal-stagger > * { opacity: 0; }
+  .reveal-stagger.in > * {
+    animation: rise-in 0.9s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  .reveal-stagger--tilt.in > :nth-child(odd) { animation-name: rise-in-tilt-l; }
+  .reveal-stagger--tilt.in > :nth-child(even) { animation-name: rise-in-tilt-r; }
+
+  // Images uncover top to bottom. The clip sits on the child: an element clipped
+  // to nothing never intersects, so it couldn't be the one that is observed.
+  .reveal-wipe > * { clip-path: inset(0 0 100% 0); }
+  .reveal-wipe.in > * { animation: wipe-in 1.2s var(--ease) both; }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; translate: 0 32px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+@keyframes rise-in-tilt-l {
+  from { opacity: 0; translate: 0 56px; rotate: -3deg; }
+  to   { opacity: 1; translate: 0 0; rotate: 0deg; }
+}
+
+@keyframes rise-in-tilt-r {
+  from { opacity: 0; translate: 0 72px; rotate: 2.5deg; }
+  to   { opacity: 1; translate: 0 0; rotate: 0deg; }
+}
+
+@keyframes wipe-in {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0); }
 }
 
 // -----------------------------------------------------------------------------
@@ -328,11 +368,25 @@ em { font-style: italic; }
 }
 
 .btn-solid {
+  position: relative;
+  overflow: hidden;
   background: var(--gradient-accent);
   color: var(--color-on-accent);
   box-shadow: var(--shadow-accent);
 
+  // light sweep across the gold on hover
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.4) 50%, transparent 65%);
+    translate: -110% 0;
+    transition: translate var(--dur-slow) var(--ease);
+    pointer-events: none;
+  }
+
   &:hover { filter: brightness(1.07); transform: translateY(-1px); }
+  &:hover::after { translate: 110% 0; }
 }
 
 .btn-ghost {
@@ -640,36 +694,49 @@ em { font-style: italic; }
 
 .hero-actions { margin-top: space("6"); }
 
+// Home hero entrance: CSS only, so it plays before any script runs
+.hero-line { display: block; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero--home {
+    .hero-media { animation: hero-settle 2.4s var(--ease) both; }
+
+    .hero-kicker,
+    .hero-line,
+    .hero-sub,
+    .hero-actions { animation: hero-rise 1s var(--ease) both; }
+
+    .hero-kicker { animation-delay: 150ms; }
+    .hero-line:nth-child(1) { animation-delay: 300ms; }
+    .hero-line:nth-child(2) { animation-delay: 450ms; }
+    .hero-sub { animation-delay: 650ms; }
+    .hero-actions { animation-delay: 800ms; }
+  }
+}
+
+// Scroll parallax (motion.js sets --hero-scroll in px and --hero-fade 1 → 0)
+.hero--home.is-parallax {
+  .hero-media { translate: 0 calc(var(--hero-scroll, 0) * 0.3px); }
+  .hero-content {
+    opacity: var(--hero-fade, 1);
+    translate: 0 calc(var(--hero-scroll, 0) * -0.15px);
+  }
+}
+
+@keyframes hero-settle {
+  from { scale: 1.12; }
+}
+
+@keyframes hero-rise {
+  from { opacity: 0; translate: 0 28px; filter: blur(8px); }
+}
+
 .hero .btn-ghost {
   border-color: rgba(255, 255, 255, 0.7);
   color: #fff;
   background: rgba(14, 13, 11, 0.25);
 
   &:hover { background: #fff; color: $color-bg; border-color: #fff; }
-}
-
-.video-toggle {
-  position: absolute;
-  top: space("4");
-  right: var(--gutter);
-  display: inline-flex;
-  align-items: center;
-  gap: space("2");
-  min-height: 2.75rem;
-  padding: 0.5rem 1rem;
-  background: rgba(14, 13, 11, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-pill);
-  color: #fff;
-  font-size: fs("xs");
-  font-weight: 500;
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-
-  &:hover { border-color: var(--color-accent); }
-
-  // Top-right at every width: clear of the hero CTAs, and never covered by the
-  // fixed, bottom-anchored cookie banner (the pause control must stay reachable).
 }
 
 .breadcrumb {
@@ -795,11 +862,56 @@ em { font-style: italic; }
   }
 }
 
+// Ribbon: a slow marquee of headline facts under the stat strip (home)
+.ribbon {
+  overflow: hidden;
+  padding-block: space("4");
+  border-bottom: 1px solid var(--color-line);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+
+  &:hover .ribbon-track { animation-play-state: paused; }
+
+  span {
+    color: var(--color-text-muted);
+    font-family: var(--font-display);
+    font-size: fs("lg");
+    font-style: italic;
+    white-space: nowrap;
+  }
+
+  i {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    background: var(--color-accent);
+    rotate: 45deg;
+  }
+}
+
+.ribbon-track {
+  display: flex;
+  width: max-content;
+  animation: ribbon-scroll 45s linear infinite;
+}
+
+// two identical groups: sliding one group's width loops seamlessly
+.ribbon-group {
+  display: flex;
+  align-items: center;
+  gap: space("6");
+  padding-right: space("6");
+}
+
+@keyframes ribbon-scroll {
+  to { translate: -50% 0; }
+}
+
 .stat-grid--boxed {
-  border: 1px solid var(--color-line);
+  border: 1px solid var(--color-card-edge);
   border-radius: var(--radius-md);
   overflow: hidden;
-  background: var(--color-surface);
+  background: var(--color-card);
 }
 
 // -----------------------------------------------------------------------------
@@ -809,8 +921,8 @@ em { font-style: italic; }
   display: flex;
   flex-direction: column;
   padding: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: var(--color-card);
+  border: 1px solid var(--color-card-edge);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-1);
 
@@ -868,18 +980,18 @@ em { font-style: italic; }
 .price-card {
   position: relative;
   padding: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: var(--color-card);
+  border: 1px solid var(--color-card-edge);
   border-radius: var(--radius-lg);
 
   h3 { font-size: fs("xl"); margin-bottom: space("3"); }
   p { color: var(--color-text-muted); max-width: 26rem; }
 
   &.accent {
-    background: linear-gradient(160deg, var(--color-sage-surface), var(--color-surface) 75%);
-    border-color: rgba(163, 179, 133, 0.35);
+    background: linear-gradient(160deg, var(--color-glow), transparent 75%), var(--color-card);
+    border-color: rgba(255, 255, 255, 0.22);
 
-    .price-eyebrow { color: var(--color-sage); }
+    .price-eyebrow { color: var(--color-mist); }
   }
 }
 
@@ -916,8 +1028,8 @@ em { font-style: italic; }
   display: grid;
   gap: space("5");
   padding: clamp(1.5rem, 1rem + 2vw, 2.75rem);
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: var(--color-card);
+  border: 1px solid var(--color-card-edge);
   border-radius: var(--radius-lg);
 
   @include mq("md") { grid-template-columns: auto 1fr; gap: space("6"); }
@@ -969,6 +1081,113 @@ em { font-style: italic; }
 
 .media-stack { display: grid; gap: space("4"); }
 
+// Scroll-expanding panorama (home). Static: a framed, captioned image under the copy.
+// .is-pinned (motion.js, landscape screens): the stage sticks full screen and the
+// frame's clip opens from the container width to the whole viewport as --p goes 0 → 1.
+.expand {
+  margin-top: clamp(2.5rem, 1.5rem + 3vw, 4rem);
+  padding-inline: var(--gutter);
+}
+
+.expand-frame {
+  position: relative;
+  max-width: calc(var(--container) - 2 * var(--gutter));
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+
+  img { width: 100%; }
+
+  // phones: the caption sits under the short panorama; from md it overlays a scrim
+  @include mq("md") {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(14, 13, 11, 0.8));
+      pointer-events: none;
+    }
+  }
+}
+
+.expand-cap {
+  padding: space("4") space("5") space("5");
+
+  .eyebrow { margin-bottom: space("2"); color: var(--color-accent-strong); }
+
+  @include mq("md") {
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: clamp(1rem, 0.6rem + 2vw, 2.5rem);
+  }
+}
+
+.expand-title {
+  display: block;
+  max-width: 18ch;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: fs("xl");
+  line-height: var(--lh-tight);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
+}
+
+.expand.is-pinned {
+  // starting frame: container width, panorama aspect (871 / 1920), centred on screen
+  --x: max(var(--gutter), calc((100vw - var(--container)) / 2 + var(--gutter)));
+  --y: max(12vh, calc((100vh - (100vw - 2 * var(--x)) * 0.4537) / 2));
+  --q: calc(1 - var(--p, 0));
+  height: 240vh;
+  height: 240svh;
+  // pull the frame up under the copy; the stage's empty top band overlaps it
+  margin-top: calc(clamp(2.5rem, 1.5rem + 3vw, 4rem) - var(--y));
+  padding-inline: 0;
+
+  .expand-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+    pointer-events: none; // the transparent band must not block the buttons above
+  }
+
+  .expand-frame {
+    position: absolute;
+    inset: 0;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    animation: none; // the scroll drives the clip instead of .reveal-wipe
+    clip-path: inset(calc(var(--y) * var(--q)) calc(var(--x) * var(--q)) round calc(var(--radius-lg) * var(--q)));
+
+    img {
+      height: 100%;
+      object-fit: cover;
+      scale: calc(1.12 - 0.12 * var(--p, 0));
+    }
+
+    &::after { opacity: calc(0.35 + 0.65 * var(--p, 0)); }
+  }
+
+  // the caption waits until the frame is mostly open, so the clip never cuts through it
+  .expand-cap {
+    padding: clamp(2rem, 1rem + 4vw, 5rem) var(--x);
+    opacity: calc((var(--p, 0) - 0.6) * 2.5);
+    translate: 0 calc(var(--q) * 60px);
+  }
+
+  .expand-title { font-size: fs("display"); }
+}
+
 .map-frame {
   height: clamp(18rem, 14rem + 16vw, 26rem);
   border: 1px solid var(--color-line);
@@ -985,6 +1204,36 @@ em { font-style: italic; }
   }
 
   &--short { height: 18.75rem; }
+}
+
+// Click-to-load placeholder: a faint street grid with a pin
+.map-facade {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 45%, var(--color-glow), transparent 55%),
+    repeating-linear-gradient(0deg, var(--color-line) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, var(--color-line) 0 1px, transparent 1px 48px),
+    var(--color-surface);
+}
+
+.map-load {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: space("2");
+  padding: space("5");
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+
+  svg { color: var(--color-accent); transition: translate var(--dur-base) var(--ease); }
+  small { color: var(--color-text-subtle); font-size: fs("sm"); font-weight: 400; }
+
+  &:hover { color: var(--color-accent-strong); }
+  &:hover svg { translate: 0 -4px; }
 }
 
 // Model cards (homes / builders)
@@ -1007,8 +1256,8 @@ em { font-style: italic; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: var(--color-card);
+  border: 1px solid var(--color-card-edge);
   border-radius: var(--radius-md);
   text-decoration: none;
   transition: transform var(--dur-base) var(--ease), border-color var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease);
@@ -1090,8 +1339,8 @@ a.model:hover {
 .step {
   position: relative;
   padding: space("6") space("5") space("5");
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: var(--color-card);
+  border: 1px solid var(--color-card-edge);
   border-radius: var(--radius-md);
 
   .stepnum {
@@ -1107,6 +1356,45 @@ a.model:hover {
   p { color: var(--color-text-muted); }
 }
 
+// Steps hang from a gold track with a diamond marker each (home, 3-up only).
+// Doubled class: it has to outrank the ol[role="list"] reset's padding.
+.process-steps.process-steps--track {
+  @include mq("lg") {
+    position: relative;
+    padding-top: space("6");
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 1px;
+      background: var(--hairline);
+      transform-origin: left;
+    }
+
+    .step::before {
+      content: "";
+      position: absolute;
+      top: calc(-1 * var(--space-6) - 5px);
+      left: space("5");
+      width: 9px;
+      height: 9px;
+      background: var(--color-accent);
+      rotate: 45deg;
+    }
+  }
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .process-steps--track::before {
+    scale: 0 1;
+    transition: scale 1.4s var(--ease) 0.2s;
+  }
+  .process-steps--track.in::before { scale: 1 1; }
+}
+
 // Info blocks (discover)
 .info-rows {
   display: grid;
@@ -1118,8 +1406,8 @@ a.model:hover {
 
 .info-block {
   padding: clamp(1.5rem, 1.2rem + 1vw, 2rem);
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: var(--color-card);
+  border: 1px solid var(--color-card-edge);
   border-radius: var(--radius-md);
 
   h3 { margin-bottom: space("3"); }
@@ -1152,7 +1440,7 @@ a.model:hover {
   position: relative;
   padding-block: clamp(3.5rem, 2.5rem + 4vw, 6rem);
   background:
-    radial-gradient(120% 140% at 100% 0%, rgba(216, 178, 107, 0.14) 0%, rgba(216, 178, 107, 0) 55%),
+    radial-gradient(120% 140% at 100% 0%, var(--color-glow) 0%, transparent 55%),
     var(--color-bg-alt);
   border-top: 1px solid var(--color-line);
 
@@ -1345,8 +1633,8 @@ a.model:hover {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-bottom: space("6");
   overflow: hidden;
-  background: var(--color-surface);
-  border: 1px solid var(--color-line);
+  background: var(--color-card);
+  border: 1px solid var(--color-card-edge);
   border-radius: var(--radius-md);
 
   @include mq("md") { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -1649,7 +1937,6 @@ textarea { min-height: 8rem; resize: vertical; }
 
 .footer-brand {
   .logo img { height: 64px; }
-  .btn-row { margin-top: space("5"); }
 
   @include mq("md") { grid-column: 1 / -1; }
   @include mq("lg") { grid-column: auto; }
@@ -2012,12 +2299,12 @@ textarea { min-height: 8rem; resize: vertical; }
   }
 
   .hero-video { display: none; }
+  .ribbon-track { animation: none; }
 }
 
 @media print {
   .site-header,
   .nav-toggle,
-  .video-toggle,
   .bk-overlay,
   .cookie-banner,
   .lb,
