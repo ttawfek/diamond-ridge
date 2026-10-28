@@ -76,6 +76,39 @@ document.querySelectorAll('[data-map-src]').forEach(box => {
   });
 });
 
+// contact / register forms: submitted in place to /api/send (Resend). Without JS the form
+// posts there directly and the redirect lands on #form-sent / #form-error.
+document.querySelectorAll('form[data-api-form]').forEach(form => {
+  const card = form.parentElement;
+  const sent = card.querySelector('#form-sent');
+  const failed = card.querySelector('#form-error');
+  const btn = form.querySelector('[type="submit"]');
+  const openedAt = Date.now();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    failed.classList.remove('on');
+    try {
+      const data = Object.fromEntries(new FormData(form));
+      data.elapsed = Date.now() - openedAt;
+      const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok) throw new Error(out.error || 'HTTP ' + res.status);
+      form.hidden = true;
+      sent.classList.add('on');
+      sent.focus();
+    } catch (err) {
+      // keep what they typed, so trying again (or copying it elsewhere) is easy
+      failed.classList.add('on');
+      failed.focus();
+      btn.disabled = false;
+      btn.textContent = label;
+    }
+  });
+});
+
 // image / floor-plan switcher (model pages): buttons carry data-target, data-src, data-cap,
 // and data-w / data-h so the stage keeps the right aspect ratio for each view.
 document.querySelectorAll('.switch[data-target]').forEach(btn => {

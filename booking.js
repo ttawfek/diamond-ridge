@@ -1,8 +1,10 @@
 /* Diamond Ridge — "Book your showing" modal
-   Calendar + enquiry form. On submit, opens the visitor's mail app with the
-   request pre-filled and addressed to the sales inbox (no server needed). */
+   Calendar + enquiry form. On submit, the request goes to /api/send (Resend), which
+   emails the sales inbox and sends the visitor a confirmation. If that fails, the
+   visitor can still send it from their own mail app. */
 (function () {
   var RECIPIENT = 'info@diamondridgeliving.ca';
+  var ENDPOINT = '/api/send';
   var SLOTS = ['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM'];
   var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   var DOW = ['Su','Mo','Tu','We','Th','Fr','Sa'];
@@ -24,6 +26,10 @@
   var form = document.getElementById('bkForm');
   var done = document.getElementById('bkDone');
   var submitBtn = document.getElementById('bkSubmit');
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  // local calendar date as YYYY-MM-DD (the server formats it for the emails)
+  function isoDate(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
 
   function fmt(d) {
     return d.toLocaleDateString('en-CA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -120,6 +126,7 @@
 
   var closeBtn = document.getElementById('bkClose');
   var lastFocus = null;
+  var openedAt = 0;
 
   function isOpen() { return overlay.classList.contains('on'); }
 
@@ -142,6 +149,7 @@
   function open() {
     resetIfDone();
     lastFocus = document.activeElement;
+    openedAt = Date.now();
     overlay.classList.add('on');
     document.body.style.overflow = 'hidden';
     closeBtn.focus();
@@ -190,7 +198,8 @@
     if (doneTitle) doneTitle.focus();
   }
 
-  function sendByEmail(p) {
+  // fallback when the server can't send: the same request, pre-filled in the visitor's mail app
+  function mailtoHref(p) {
     var subject = 'Showing request \u2014 ' + p.name + ' \u2014 ' + p.date;
     var body =
       'SHOWING REQUEST' +
@@ -201,10 +210,50 @@
       '\nEmail: ' + p.email +
       '\nInterested in: ' + p.interest +
       '\n\nNotes: ' + (p.notes || 'None');
-    window.location.href = 'mailto:' + RECIPIENT +
+    return 'mailto:' + RECIPIENT +
       '?subject=' + encodeURIComponent(subject) +
       '&body=' + encodeURIComponent(body);
-    showDone('Your email app should have opened with the request ready to send \u2014 just hit send. If nothing opened, call or WhatsApp 1 (403) 636-1855.');
+  }
+
+  function showSendError(p) {
+    err.textContent = 'Sorry, we couldn\u2019t send your request just now. Please call or WhatsApp 1 (403) 636-1855, or ';
+    var a = document.createElement('a');
+    a.href = mailtoHref(p);
+    a.textContent = 'send it from your email app';
+    err.appendChild(a);
+    err.appendChild(document.createTextNode('.'));
+    err.classList.add('on');
+  }
+
+  function send(p) {
+    var label = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending\u2026';
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        form: 'showing',
+        name: p.name, phone: p.phone, email: p.email, interest: p.interest, notes: p.notes,
+        company: p.company,
+        date: isoDate(selDate),
+        time: p.time,
+        elapsed: Date.now() - openedAt
+      })
+    })
+      .then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (out) {
+          if (!r.ok || !out.ok) throw new Error(out.error || 'HTTP ' + r.status);
+        });
+      })
+      .then(function () {
+        showDone('Thanks \u2014 your showing request has been sent. A confirmation is on its way to ' + p.email + ', and we\u2019ll confirm your appointment within one business day.');
+      })
+      .catch(function () { showSendError(p); })
+      .then(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = label;
+      });
   }
 
   submitBtn.addEventListener('click', function () {
@@ -234,7 +283,7 @@
     // honeypot filled in: a bot, so skip the email but look successful
     if (payload.company) { showDone(); return; }
 
-    sendByEmail(payload);
+    send(payload);
   });
 
   renderCal();

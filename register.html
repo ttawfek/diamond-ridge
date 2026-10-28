@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://cdn.prod.website-files.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap"></noscript>
-<link rel="stylesheet" href="css/styles.css?v=20261027i">
-<script src="js.js?v=20261027i" defer></script>
+<link rel="stylesheet" href="css/styles.css?v=20261028a">
+<script src="js.js?v=20261028a" defer></script>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -113,7 +113,12 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
           <div class="card card--form">
             <h2>Tell us about you</h2>
             <p class="form-note">We'll reach out within one business day. Fields marked <span class="req" aria-hidden="true">*</span><span class="visually-hidden">with an asterisk</span> are required.</p>
-            <form class="form-grid form-grid--2 mt-5" action="mailto:info@diamondridgeliving.ca" method="post" enctype="text/plain">
+            <p class="form-status form-status--ok" id="form-sent" role="status" tabindex="-1">Thanks for registering — a confirmation is on its way to your inbox, and we'll be in touch within one business day with the Phase 1 details.</p>
+            <p class="form-status form-status--err" id="form-error" role="alert" tabindex="-1">Sorry, your registration didn't go through. Please try again, or call or WhatsApp <a href="tel:+14036361855">1 (403) 636-1855</a> or email <a href="mailto:info@diamondridgeliving.ca">info@diamondridgeliving.ca</a>.</p>
+            <!-- sent through /api/send (Resend); js.js submits it in place -->
+            <form class="form-grid form-grid--2 mt-5" action="/api/send" method="post" data-api-form>
+              <input type="hidden" name="form" value="register">
+              <input name="company" type="text" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
               <div><label for="r-fname">First name <span class="req" aria-hidden="true">*</span></label><input id="r-fname" name="first_name" type="text" autocomplete="given-name" required></div>
               <div><label for="r-lname">Last name <span class="req" aria-hidden="true">*</span></label><input id="r-lname" name="last_name" type="text" autocomplete="family-name" required></div>
               <div class="full"><label for="r-email">Email <span class="req" aria-hidden="true">*</span></label><input id="r-email" name="email" type="email" autocomplete="email" required></div>

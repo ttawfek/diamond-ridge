@@ -1889,6 +1889,26 @@ textarea { min-height: 8rem; resize: vertical; }
   a { color: var(--color-accent); }
 }
 
+// Form result messages: shown by js.js (.on), or without JS by the
+// /api/send redirect landing on #form-sent / #form-error (:target)
+.form-status {
+  display: none;
+  margin-top: space("5");
+  padding: space("4") space("5");
+  border: 1px solid;
+  border-radius: var(--radius-sm);
+  font-size: fs("sm");
+
+  &.on,
+  &:target { display: block; }
+  &:focus { outline: none; }
+
+  a { color: inherit; }
+}
+
+.form-status--ok { border-color: rgba(216, 178, 107, 0.45); background: rgba(216, 178, 107, 0.08); color: var(--color-accent-strong); }
+.form-status--err { border-color: rgba(244, 160, 136, 0.45); background: rgba(244, 160, 136, 0.08); color: var(--color-danger); }
+
 // Contact list (contact page + footer)
 .contact-list {
   display: grid;
