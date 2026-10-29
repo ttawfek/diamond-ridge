@@ -9,6 +9,7 @@
             "request": "launch",
             "name": "Launch Integrated Browser against localhost",
             "url": "http://localhost:8080",
+            "preLaunchTask": "Serve site",
             "webRoot": "${workspaceFolder}"
         }
     ]

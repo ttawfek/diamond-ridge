@@ -1,5 +1,5 @@
-// Vercel serverless function: delivers the site's three forms (showing request,
-// contact, register) through Resend, then sends the visitor a short confirmation.
+// Vercel serverless function: delivers the site's two forms (showing request,
+// register / contact us) through Resend, then sends the visitor a short confirmation.
 //
 // Environment variables (Vercel → Project → Settings → Environment Variables):
 //   RESEND_API_KEY  required. Never exposed to the browser.
@@ -8,8 +8,8 @@
 //   MAIL_FROM       sender; its domain must be verified in Resend.
 //                   Default "Diamond Ridge <website@diamondridgeliving.ca>"
 //
-// Browsers with JS post JSON and get JSON back. Without JS, the contact and register
-// forms post here directly and are redirected back to the page's #form-sent / #form-error.
+// Browsers with JS post JSON and get JSON back. Without JS, the register form posts
+// here directly and is redirected back to the page's #form-sent / #form-error.
 
 const SITE = {
   name: 'Diamond Ridge',
@@ -21,7 +21,7 @@ const SHOWINGS_TO = process.env.SHOWINGS_TO || LEADS_TO;
 const MAIL_FROM = process.env.MAIL_FROM || 'Diamond Ridge <website@diamondridgeliving.ca>';
 
 const SLOTS = ['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM'];
-const PAGES = { contact: '/contact.html', register: '/register.html' };
+const PAGES = { register: '/register.html' };
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const MIN_FILL_MS = 2500; // humans don't fill a form faster than this; scripted posts often do
 
@@ -80,22 +80,6 @@ function compose(form, b) {
     };
   }
 
-  if (form === 'contact') {
-    const message = block(b.message, 4000);
-    if (!message) return { error: 'missing_fields' };
-    return {
-      lead: {
-        to: list(LEADS_TO),
-        subject: `Website message: ${name}`,
-        rows: [['Name', name], ['Email', email], ['Phone', phone || 'Not provided'], ['Message', message]],
-      },
-      confirm: {
-        subject: 'We received your message',
-        paras: [greeting, 'Thanks for getting in touch with Diamond Ridge. We’ve received your message and will reply within one business day.'],
-      },
-    };
-  }
-
   // register
   const interest = line(b.interest, 120);
   const message = block(b.message, 4000);
@@ -143,7 +127,7 @@ module.exports = async function handler(req, res) {
   const reply = (status, out) => {
     if (wantsJson) return res.status(status).json(out);
     // no-JS form post: back to the page, where :target shows the matching message
-    res.setHeader('Location', `${PAGES[form] || '/contact.html'}#${out.ok ? 'form-sent' : 'form-error'}`);
+    res.setHeader('Location', `${PAGES[form] || '/register.html'}#${out.ok ? 'form-sent' : 'form-error'}`);
     return res.status(303).end();
   };
 
@@ -157,7 +141,7 @@ module.exports = async function handler(req, res) {
     if (host !== req.headers.host) return reply(403, { ok: false, error: 'bad_origin' });
   }
 
-  if (!['showing', 'contact', 'register'].includes(form)) return reply(400, { ok: false, error: 'unknown_form' });
+  if (!['showing', 'register'].includes(form)) return reply(400, { ok: false, error: 'unknown_form' });
 
   // bots: a filled honeypot or an instant submit look successful but send nothing
   const elapsed = Number(body.elapsed);

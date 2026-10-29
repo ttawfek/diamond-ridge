@@ -76,7 +76,7 @@ document.querySelectorAll('[data-map-src]').forEach(box => {
   });
 });
 
-// contact / register forms: submitted in place to /api/send (Resend). Without JS the form
+// register (contact us) form: submitted in place to /api/send (Resend). Without JS the form
 // posts there directly and the redirect lands on #form-sent / #form-error.
 document.querySelectorAll('form[data-api-form]').forEach(form => {
   const card = form.parentElement;
@@ -240,6 +240,87 @@ if (lbLinks.length) {
     }
   });
 }
+
+// home lot plan: picking a lot swaps the panel from the overview to that lot; picking it again,
+// or Escape, goes back. data-status is "available", "sold" or the builder holding the lot
+// (albion | sen | valmont); the overview and each lot's label are rebuilt from those.
+document.querySelectorAll('[data-lot-plan]').forEach(plan => {
+  const lots = [...plan.querySelectorAll('.lot')];
+  const body = plan.querySelector('[data-lot-body]');
+  const tpl = plan.querySelector('[data-lot-template]');
+  const BUILDERS = { albion: 'Albion Homes', sen: 'SEN', valmont: 'Valmont Custom Homes' };
+  lots.forEach(l => {
+    const s = l.dataset.status;
+    l.setAttribute('aria-label', `Lot ${l.dataset.lot}, ${BUILDERS[s] || s}${l.hasAttribute('data-showhome') ? ', showhome' : ''}`);
+  });
+  const numbers = status => lots.filter(l => l.dataset.status === status).map(l => +l.dataset.lot).sort((a, b) => a - b);
+  const listOf = ns => (ns.length > 1 ? 'Lots ' + ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns.length ? 'Lot ' + ns[0] : 'None left');
+  plan.querySelector('[data-lot-count]').textContent = lots.filter(l => l.dataset.status !== 'sold').length;
+  plan.querySelector('[data-lot-total]').textContent = lots.length;
+  plan.querySelectorAll('[data-lot-list]').forEach(dd => {
+    const ns = numbers(dd.dataset.lotList);
+    if (ns.length) dd.textContent = listOf(ns);
+    else dd.parentElement.remove(); // no lots in this group right now
+  });
+  const view = body.querySelector('[data-lot-view]');
+  const overview = [...view.childNodes];
+  let current = null;
+
+  // one lot's details, from the template
+  const render = ({ n, status, side, lane, showhome }) => {
+    const frag = tpl.content.cloneNode(true);
+    const f = name => frag.querySelector(`[data-f="${name}"]`);
+    const open = status !== 'sold';
+    f('num').textContent = n;
+    f('status').dataset.status = status;
+    f('status').querySelector('span').textContent = open ? 'Available' : 'Sold';
+    if (BUILDERS[status]) f('builder').textContent = BUILDERS[status];
+    else f('builder-row').remove();
+    f('side').textContent = `${side === 'north' ? 'North' : 'South'} side`;
+    if (!lane) f('lane-row').remove();
+    if (!showhome) f('show-row').remove();
+    // only open lots get a button; it carries the lot to the register form
+    if (open) f('cta').href = `register.html?lot=${n}`;
+    else f('cta').remove();
+    return frag;
+  };
+
+  // An invisible copy of the fullest possible details shares the panel's grid cell, so the
+  // panel is always as tall as its tallest state and picking a lot never resizes the row.
+  const sizer = document.createElement('div');
+  sizer.className = 'lot-panel-view lot-panel-sizer';
+  sizer.setAttribute('aria-hidden', 'true');
+  sizer.inert = true;
+  const longest = Object.keys(BUILDERS).reduce((a, b) => (BUILDERS[b].length > BUILDERS[a].length ? b : a));
+  sizer.append(render({ n: '48', status: longest, side: 'north', lane: true, showhome: true }));
+  body.append(sizer);
+
+  const show = lot => {
+    current = lot;
+    lots.forEach(l => l.setAttribute('aria-pressed', String(l === lot)));
+    if (!lot) return view.replaceChildren(...overview);
+    view.replaceChildren(render({
+      n: lot.dataset.lot,
+      status: lot.dataset.status,
+      side: lot.dataset.side,
+      lane: lot.hasAttribute('data-lane'),
+      showhome: lot.hasAttribute('data-showhome'),
+    }));
+  };
+
+  lots.forEach(lot => {
+    lot.addEventListener('click', () => show(current === lot ? null : lot));
+    lot.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(current === lot ? null : lot); }
+      else if (e.key === 'Escape' && current) show(null);
+    });
+  });
+});
+
+// register.html?lot=44 (from the lot plan): start the message off with the lot they picked
+const lotAsked = new URLSearchParams(location.search).get('lot');
+const registerMsg = document.getElementById('r-msg');
+if (registerMsg && /^\d{1,3}$/.test(lotAsked || '') && !registerMsg.value) registerMsg.value = `I'd like to know more about Lot ${lotAsked}.`;
 
 // cookie consent: the Meta Pixel (loadMetaPixel, defined in each page's <head>) only runs after "Accept"
 const CONSENT_KEY = 'dr-cookie-consent';
