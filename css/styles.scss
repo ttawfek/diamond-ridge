@@ -2350,6 +2350,9 @@ textarea { min-height: 8rem; resize: vertical; }
     overflow: hidden;
     background: #fffdf8;
     border-radius: var(--radius-sm);
+    transition: opacity var(--dur-fast) var(--ease);
+
+    &:hover { opacity: 0.85; }
 
     @include mq("sm") { width: 132px; height: 62px; }
 
