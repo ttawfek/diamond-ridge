@@ -32,8 +32,8 @@
 <link rel="preconnect" href="https://cdn.prod.website-files.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap"></noscript>
-<link rel="stylesheet" href="css/styles.css?v=20261028r">
-<script src="js.js?v=20261028r" defer></script>
+<link rel="stylesheet" href="css/styles.css?v=20261029a">
+<script src="js.js?v=20261029a" defer></script>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -63,7 +63,7 @@
      "@type": "City",
      "name": "Diamond Valley, Alberta"
     },
-    "priceRange": "$150,000–$1,049,000"
+    "priceRange": "From $150,000"
    }
   },
   {
@@ -153,7 +153,7 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
               <div><label for="r-fname">First name <span class="req" aria-hidden="true">*</span></label><input id="r-fname" name="first_name" type="text" autocomplete="given-name" required></div>
               <div><label for="r-lname">Last name <span class="req" aria-hidden="true">*</span></label><input id="r-lname" name="last_name" type="text" autocomplete="family-name" required></div>
               <div class="full"><label for="r-email">Email <span class="req" aria-hidden="true">*</span></label><input id="r-email" name="email" type="email" autocomplete="email" required></div>
-              <div class="full"><label for="r-phone">Phone</label><input id="r-phone" name="phone" type="tel" autocomplete="tel"></div>
+              <div class="full"><label for="r-phone">Phone <span class="req" aria-hidden="true">*</span></label><input id="r-phone" name="phone" type="tel" autocomplete="tel" required></div>
               <div class="full">
                 <label for="r-interest">I'm interested in</label>
                 <select id="r-interest" name="interest">
@@ -163,6 +163,17 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
                   <option>Receiving the information package</option>
                   <option>Not sure yet — just curious</option>
                   <option>I have a question</option>
+                </select>
+              </div>
+              <div class="full">
+                <label for="r-timeline">Timeline (optional)</label>
+                <select id="r-timeline" name="timeline">
+                  <option value="">Select a timeline</option>
+                  <option>1–3 Months</option>
+                  <option>3–6 Months</option>
+                  <option>6–9 Months</option>
+                  <option>9–12 Months</option>
+                  <option>12–24 Months</option>
                 </select>
               </div>
               <div class="full"><label for="r-msg">Anything else we should know? (optional)</label><textarea id="r-msg" name="message"></textarea></div>

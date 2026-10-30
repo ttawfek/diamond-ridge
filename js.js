@@ -84,6 +84,12 @@ document.querySelectorAll('form[data-api-form]').forEach(form => {
   const failed = card.querySelector('#form-error');
   const btn = form.querySelector('[type="submit"]');
   const openedAt = Date.now();
+  // greyed out until every required field is valid. aria-disabled (not disabled) keeps it
+  // clickable, so a click still runs the browser's check and points at the missing field
+  const sync = () => btn.setAttribute('aria-disabled', String(!form.checkValidity()));
+  form.addEventListener('input', sync);
+  form.addEventListener('change', sync);
+  sync();
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const label = btn.textContent;

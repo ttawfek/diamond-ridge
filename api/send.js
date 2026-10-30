@@ -21,6 +21,7 @@ const SHOWINGS_TO = process.env.SHOWINGS_TO || LEADS_TO;
 const MAIL_FROM = process.env.MAIL_FROM || 'Diamond Ridge <website@diamondridgeliving.ca>';
 
 const SLOTS = ['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM'];
+const TIMELINES = ['1–3 Months', '3–6 Months', '6–9 Months', '9–12 Months', '12–24 Months'];
 const PAGES = { register: '/register.html' };
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 const MIN_FILL_MS = 2500; // humans don't fill a form faster than this; scripted posts often do
@@ -56,6 +57,7 @@ function compose(form, b) {
   const phone = line(b.phone, 40);
   if (!name || !email) return { error: 'missing_fields' };
   if (!EMAIL_RE.test(email)) return { error: 'bad_email' };
+  if (form === 'register' && !phone) return { error: 'missing_fields' };
 
   const hi = firstName(name);
   const greeting = hi ? `Hi ${hi},` : 'Hello,';
@@ -82,12 +84,13 @@ function compose(form, b) {
 
   // register
   const interest = line(b.interest, 120);
+  const timeline = TIMELINES.includes(b.timeline) ? b.timeline : '';
   const message = block(b.message, 4000);
   return {
     lead: {
       to: list(LEADS_TO),
       subject: `New registration: ${name}${interest ? `, ${interest}` : ''}`,
-      rows: [['Name', name], ['Email', email], ['Phone', phone || 'Not provided'], ['Interested in', interest || 'Not specified'], ['Message', message || 'None']],
+      rows: [['Name', name], ['Email', email], ['Phone', phone || 'Not provided'], ['Interested in', interest || 'Not specified'], ['Timeline', timeline || 'Not specified'], ['Message', message || 'None']],
     },
     confirm: {
       subject: 'Thanks for registering with Diamond Ridge',

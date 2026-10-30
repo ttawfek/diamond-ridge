@@ -39,10 +39,6 @@ def write(rel, text):
         fh.write(text)
 
 
-def money(n):
-    return '${:,}'.format(n)
-
-
 def num(n):
     return '{:,}'.format(n)
 
@@ -121,7 +117,6 @@ def card(m, prefix='', level='h3', with_id=False):
         '          <div class="m-body">',
         '            <%s>%s</%s>' % (level, m['name'], level),
         '            <p class="m-spec">%s</p>' % spec_line(m),
-        '            <p class="m-price">From %s <span>incl. GST</span></p>' % money(m['price']),
         '          </div>',
         '        </a>',
     ])
@@ -143,8 +138,7 @@ def indent(lines, n):
 
 
 def quickstats(m):
-    qs = [(money(m['price']), 'Starting price · incl. GST'),
-          (num(m['sqft']), m.get('sqft_label', 'Total sq ft' if m['collection'] == 'two-storey' else 'Sq ft · single level'))]
+    qs = [(num(m['sqft']), m.get('sqft_label', 'Total sq ft' if m['collection'] == 'two-storey' else 'Sq ft · single level'))]
     if m['collection'] == 'two-storey':
         qs += [(num(m['main']), 'Main floor sq ft'), (num(m['upper']), 'Upper floor sq ft')]
     qs += [(m['beds'], 'Bedrooms'), (m['baths'], 'Bathrooms'), (m['garage'][0], m['garage'][1]),
@@ -170,8 +164,8 @@ def named_line(m):
 
 
 def meta_description(m):
-    base = '%s by Valmont Custom Homes at Diamond Ridge: a %s sq ft %s, %s, %s bath, from %s incl. GST.' % (
-        m['name'], num(m['sqft']), coll_label(m).lower(), m['beds'], m['baths'], money(m['price']))
+    base = '%s by Valmont Custom Homes at Diamond Ridge: a %s sq ft %s, %s, %s bath.' % (
+        m['name'], num(m['sqft']), coll_label(m).lower(), m['beds'], m['baths'])
     tail = ' Plans, renderings and brochure.'
     return base + tail if len(base + tail) <= 160 else base
 
@@ -192,14 +186,6 @@ def product_ld(m):
                 'numberOfBedrooms': m['beds_num'],
                 'numberOfFullBathrooms': m['full'],
                 'numberOfPartialBathrooms': m['partial'],
-                'offers': {
-                    '@type': 'Offer',
-                    'price': m['price'],
-                    'priceCurrency': 'CAD',
-                    'url': url,
-                    'priceSpecification': {'@type': 'PriceSpecification', 'price': m['price'], 'priceCurrency': 'CAD', 'valueAddedTaxIncluded': True},
-                    'description': 'Starting price, incl. GST',
-                },
             },
             {
                 '@type': 'BreadcrumbList',
@@ -383,14 +369,14 @@ def homes_sections():
     <div class="wrap">
       <div class="collection-head reveal">
         <h2 id="%s-title">%s <span class="collection-count">(%d)</span></h2>
-        <p class="collection-meta">%s plans · %s–%s sq ft · from %s incl. GST</p>
+        <p class="collection-meta">%s plans · %s–%s sq ft</p>
       </div>
       <div class="model-grid model-grid--3">
 %s
       </div>
     </div>
   </section>''' % (' section--alt' if key != 'bungalow' else '', cid, key, cid, cid, c['heading'], len(ms), c['word'].capitalize(),
-                   num(lo), num(hi), money(min(m['price'] for m in ms)), '\n'.join(card(m, '', with_id=True) for m in ms)))
+                   num(lo), num(hi), '\n'.join(card(m, '', with_id=True) for m in ms)))
     return '\n\n'.join(out)
 
 

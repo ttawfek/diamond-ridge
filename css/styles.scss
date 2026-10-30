@@ -395,6 +395,17 @@ em { font-style: italic; }
 
   &:hover { filter: brightness(1.07); transform: translateY(-1px); }
   &:hover::after { translate: 110% 0; }
+
+  // form not complete yet (js.js): greyed out, no hover lift or sweep
+  &[aria-disabled="true"] {
+    background: var(--color-surface-3);
+    border-color: var(--color-line-strong);
+    color: var(--color-text-subtle);
+    box-shadow: none;
+    cursor: not-allowed;
+    &:hover { filter: none; transform: none; }
+    &::after { display: none; }
+  }
 }
 
 .btn-ghost {
