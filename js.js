@@ -1,43 +1,353 @@
-// mobile menu toggle
-const burger = document.getElementById('burger');
-const menu = document.getElementById('mobileMenu');
-if (burger && menu) {
-  burger.addEventListener('click', () => {
-    menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+// mobile menu toggle (accessible: aria-expanded, Esc to close, resets on widen)
+const header = document.querySelector('.site-header');
+const burger = document.getElementById('navToggle');
+if (header && burger) {
+  const setOpen = (open) => {
+    header.classList.toggle('is-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+  };
+  burger.addEventListener('click', () => setOpen(burger.getAttribute('aria-expanded') !== 'true'));
+  header.querySelectorAll('.nav-panel a').forEach(a => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && header.classList.contains('is-open')) { setOpen(false); burger.focus(); }
   });
-  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { menu.style.display = 'none'; }));
+  const wide = window.matchMedia('(min-width: 60em)');
+  const onWide = (e) => { if (e.matches) setOpen(false); };
+  if (wide.addEventListener) wide.addEventListener('change', onWide); else wide.addListener(onWide);
 }
 
-// scroll reveal
-const io = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-  });
-}, { threshold: 0.12 });
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+// scroll reveal (progressive enhancement: content is visible without JS).
+// .reveal-stagger reveals its children one after another (--i drives the delay).
+document.querySelectorAll('.reveal-stagger').forEach(el => {
+  [...el.children].forEach((child, i) => child.style.setProperty('--i', i));
+});
+const reveals = document.querySelectorAll('.reveal, .reveal-stagger, .reveal-wipe');
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => io.observe(el));
+} else {
+  reveals.forEach(el => el.classList.add('in'));
+}
 
-// highlight active nav link
-const here = location.pathname.split('/').pop() || 'index.html';
-document.querySelectorAll('.nav-links a').forEach(a => {
-  if (a.getAttribute('href') === here) a.classList.add('active');
+// hero background videos: only play when motion is welcome
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.querySelectorAll('[data-hero-video]').forEach(video => {
+  video.addEventListener('playing', () => video.classList.add('is-playing'));
+  // start once the hero image is in, so the video never competes with it for bandwidth,
+  // and skip it entirely when the visitor has asked to save data
+  const saveData = navigator.connection && navigator.connection.saveData;
+  if (!reduceMotion && !saveData) {
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      const p = video.play();
+      if (p && p.catch) p.catch(() => {});
+    };
+    const still = video.parentElement.querySelector('img.hero-media');
+    if (!still || still.complete) start();
+    else {
+      still.addEventListener('load', start, { once: true });
+      still.addEventListener('error', start, { once: true });
+    }
+  }
 });
 
+// map facade: without JS the link opens Google Maps; with JS a click swaps the embed in place
+document.querySelectorAll('[data-map-src]').forEach(box => {
+  const link = box.querySelector('.map-load');
+  if (!link) return;
+  const note = link.querySelector('[data-map-newtab]');
+  if (note) note.remove();
+  link.removeAttribute('target');
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const frame = document.createElement('iframe');
+    frame.src = box.dataset.mapSrc;
+    frame.title = box.dataset.mapTitle || 'Map';
+    frame.referrerPolicy = 'no-referrer-when-downgrade';
+    box.classList.remove('map-facade');
+    box.replaceChildren(frame);
+    frame.focus();
+  });
+});
 
-// dark mode toggle (persisted)
-(function(){
-  const saved = localStorage.getItem('dr-theme');
-  if(saved === 'dark') document.documentElement.setAttribute('data-theme','dark');
-  function sync(){
-    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.querySelectorAll('[data-toggle-theme] .tt-label').forEach(l=>l.textContent = dark ? 'Light' : 'Dark');
-  }
-  document.querySelectorAll('[data-toggle-theme]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-      if(dark){ document.documentElement.removeAttribute('data-theme'); localStorage.setItem('dr-theme','light'); }
-      else { document.documentElement.setAttribute('data-theme','dark'); localStorage.setItem('dr-theme','dark'); }
-      sync();
+// register (contact us) form: submitted in place to /api/send (Resend). Without JS the form
+// posts there directly and the redirect lands on #form-sent / #form-error.
+document.querySelectorAll('form[data-api-form]').forEach(form => {
+  const card = form.parentElement;
+  const sent = card.querySelector('#form-sent');
+  const failed = card.querySelector('#form-error');
+  const btn = form.querySelector('[type="submit"]');
+  const openedAt = Date.now();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    failed.classList.remove('on');
+    try {
+      const data = Object.fromEntries(new FormData(form));
+      data.elapsed = Date.now() - openedAt;
+      const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      const out = await res.json().catch(() => ({}));
+      if (!res.ok || !out.ok) throw new Error(out.error || 'HTTP ' + res.status);
+      form.hidden = true;
+      sent.classList.add('on');
+      sent.focus();
+    } catch (err) {
+      // keep what they typed, so trying again (or copying it elsewhere) is easy
+      failed.classList.add('on');
+      failed.focus();
+      btn.disabled = false;
+      btn.textContent = label;
+    }
+  });
+});
+
+// image / floor-plan switcher (model pages): buttons carry data-target, data-src, data-cap,
+// and data-w / data-h so the stage keeps the right aspect ratio for each view.
+document.querySelectorAll('.switch[data-target]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const t = btn.dataset.target;
+    const stage = document.getElementById(t + '-stage');
+    const cap = document.getElementById(t + '-cap');
+    if (stage) {
+      if (btn.dataset.w && btn.dataset.h) { stage.width = +btn.dataset.w; stage.height = +btn.dataset.h; }
+      stage.src = btn.dataset.src;
+      stage.alt = stage.dataset.name + ' — ' + btn.dataset.cap;
+      if (stage.parentNode.hasAttribute('data-lightbox')) stage.parentNode.href = btn.dataset.src;
+    }
+    if (cap) cap.textContent = btn.dataset.cap;
+    document.querySelectorAll('.switch[data-target="' + t + '"]').forEach(b => {
+      b.classList.remove('on');
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('on');
+    btn.setAttribute('aria-pressed', 'true');
+  });
+});
+
+// collection filter (homes.html): progressive enhancement, so without JS both sections show
+const filterRow = document.querySelector('[data-filter-row]');
+if (filterRow) {
+  const sections = document.querySelectorAll('[data-collection]');
+  const status = filterRow.querySelector('[data-filter-status]');
+  const buttons = filterRow.querySelectorAll('[data-filter]');
+  const apply = (value, announce) => {
+    let shown = 0;
+    sections.forEach(sec => {
+      const on = value === 'all' || sec.dataset.collection === value;
+      sec.hidden = !on;
+      if (on) shown += sec.querySelectorAll('.model').length;
+    });
+    buttons.forEach(b => {
+      const on = b.dataset.filter === value;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    if (status && announce) status.textContent = 'Showing ' + shown + ' homes';
+  };
+  buttons.forEach(b => b.addEventListener('click', () => apply(b.dataset.filter, true)));
+  // a deep link (e.g. homes.html#tucker) must never point into a hidden section
+  window.addEventListener('hashchange', () => {
+    const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (target && target.closest('[data-collection][hidden]')) { apply('all', false); target.scrollIntoView(); }
+  });
+  filterRow.hidden = false;
+}
+
+// lightbox for [data-lightbox] links (gallery + home renderings / floor plans).
+// Large images (floor plans) get a "Zoom" toggle that shows them at full
+// resolution in a scrollable pane, so plan text stays legible.
+const lbLinks = document.querySelectorAll('[data-lightbox]');
+if (lbLinks.length) {
+  const lb = document.createElement('div');
+  lb.className = 'lb';
+  lb.setAttribute('role', 'dialog');
+  lb.setAttribute('aria-modal', 'true');
+  lb.setAttribute('aria-label', 'Enlarged image');
+  lb.innerHTML =
+    '<div class="lb-bar">' +
+    '<button type="button" class="lb-zoom" aria-pressed="false" hidden>Zoom in</button>' +
+    '<button type="button" class="lb-x" aria-label="Close enlarged image">&#10005;</button>' +
+    '</div>' +
+    '<div class="lb-pane"><img alt=""></div>';
+  document.body.appendChild(lb);
+  const lbImg = lb.querySelector('img');
+  const lbPane = lb.querySelector('.lb-pane');
+  const lbClose = lb.querySelector('.lb-x');
+  const lbZoom = lb.querySelector('.lb-zoom');
+  let lastFocus = null;
+
+  const setZoom = (on) => {
+    lb.classList.toggle('is-zoomed', on);
+    lbZoom.setAttribute('aria-pressed', String(on));
+    lbZoom.textContent = on ? 'Fit to screen' : 'Zoom in';
+    if (on) lbPane.setAttribute('tabindex', '0'); else lbPane.removeAttribute('tabindex');
+    lbPane.scrollTop = 0;
+    lbPane.scrollLeft = Math.max(0, (lbPane.scrollWidth - lbPane.clientWidth) / 2);
+  };
+  // Offer zoom only when the file is meaningfully larger than it is shown.
+  const updateZoomable = () => {
+    if (lb.classList.contains('is-zoomed')) return;
+    const big = lbImg.naturalWidth > lbImg.clientWidth * 1.25 || lbImg.naturalHeight > lbImg.clientHeight * 1.25;
+    lbZoom.hidden = !big;
+    lbImg.classList.toggle('is-zoomable', big);
+  };
+  lbImg.addEventListener('load', updateZoomable);
+
+  const closeLb = () => {
+    if (!lb.classList.contains('on')) return;
+    setZoom(false);
+    lb.classList.remove('on');
+    document.body.style.overflow = '';
+    lbImg.removeAttribute('src');
+    lbZoom.hidden = true;
+    if (lastFocus) lastFocus.focus();
+  };
+
+  lbLinks.forEach(link => link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const img = link.querySelector('img');
+    lastFocus = link;
+    setZoom(false);
+    lbZoom.hidden = true;
+    lbImg.src = link.getAttribute('href');
+    lbImg.alt = img ? img.alt : '';
+    lb.classList.add('on');
+    document.body.style.overflow = 'hidden';
+    if (lbImg.complete && lbImg.naturalWidth) updateZoomable();
+    lbClose.focus();
+  }));
+  lbZoom.addEventListener('click', () => setZoom(!lb.classList.contains('is-zoomed')));
+  lb.addEventListener('click', (e) => {
+    if (e.target === lbImg) { if (!lbZoom.hidden) setZoom(!lb.classList.contains('is-zoomed')); return; }
+    if (e.target === lb || e.target === lbPane || e.target === lbClose) closeLb();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (!lb.classList.contains('on')) return;
+    if (e.key === 'Escape') { closeLb(); return; }
+    if (e.key === 'Tab') { // keep focus inside the dialog
+      const items = [lbZoom, lbClose, lbPane].filter(el => !el.hidden && (el !== lbPane || lbPane.hasAttribute('tabindex')));
+      const i = items.indexOf(document.activeElement);
+      e.preventDefault();
+      items[(i + (e.shiftKey ? -1 : 1) + items.length) % items.length].focus();
+    }
+  });
+}
+
+// home lot plan: picking a lot swaps the panel from the overview to that lot; picking it again,
+// or Escape, goes back. data-status is "available", "sold" or the builder holding the lot
+// (albion | sen | valmont); the overview and each lot's label are rebuilt from those.
+document.querySelectorAll('[data-lot-plan]').forEach(plan => {
+  const lots = [...plan.querySelectorAll('.lot')];
+  const body = plan.querySelector('[data-lot-body]');
+  const tpl = plan.querySelector('[data-lot-template]');
+  const BUILDERS = { albion: 'Albion Homes', sen: 'SEN', valmont: 'Valmont Custom Homes' };
+  lots.forEach(l => {
+    const s = l.dataset.status;
+    l.setAttribute('aria-label', `Lot ${l.dataset.lot}, ${BUILDERS[s] || s}${l.hasAttribute('data-showhome') ? ', showhome' : ''}`);
+  });
+  const numbers = status => lots.filter(l => l.dataset.status === status).map(l => +l.dataset.lot).sort((a, b) => a - b);
+  const listOf = ns => (ns.length > 1 ? 'Lots ' + ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns.length ? 'Lot ' + ns[0] : 'None left');
+  plan.querySelector('[data-lot-count]').textContent = lots.filter(l => l.dataset.status !== 'sold').length;
+  plan.querySelector('[data-lot-total]').textContent = lots.length;
+  plan.querySelectorAll('[data-lot-list]').forEach(dd => {
+    const ns = numbers(dd.dataset.lotList);
+    if (ns.length) dd.textContent = listOf(ns);
+    else dd.parentElement.remove(); // no lots in this group right now
+  });
+  const view = body.querySelector('[data-lot-view]');
+  const overview = [...view.childNodes];
+  let current = null;
+
+  // one lot's details, from the template
+  const render = ({ n, status, side, lane, showhome }) => {
+    const frag = tpl.content.cloneNode(true);
+    const f = name => frag.querySelector(`[data-f="${name}"]`);
+    const open = status !== 'sold';
+    f('num').textContent = n;
+    f('status').dataset.status = status;
+    f('status').querySelector('span').textContent = open ? 'Available' : 'Sold';
+    if (BUILDERS[status]) f('builder').textContent = BUILDERS[status];
+    else f('builder-row').remove();
+    f('side').textContent = `${side === 'north' ? 'North' : 'South'} side`;
+    if (!lane) f('lane-row').remove();
+    if (!showhome) f('show-row').remove();
+    // only open lots get a button; it carries the lot to the register form
+    if (open) f('cta').href = `register.html?lot=${n}`;
+    else f('cta').remove();
+    return frag;
+  };
+
+  // An invisible copy of the fullest possible details shares the panel's grid cell, so the
+  // panel is always as tall as its tallest state and picking a lot never resizes the row.
+  const sizer = document.createElement('div');
+  sizer.className = 'lot-panel-view lot-panel-sizer';
+  sizer.setAttribute('aria-hidden', 'true');
+  sizer.inert = true;
+  const longest = Object.keys(BUILDERS).reduce((a, b) => (BUILDERS[b].length > BUILDERS[a].length ? b : a));
+  sizer.append(render({ n: '48', status: longest, side: 'north', lane: true, showhome: true }));
+  body.append(sizer);
+
+  const show = lot => {
+    current = lot;
+    lots.forEach(l => l.setAttribute('aria-pressed', String(l === lot)));
+    if (!lot) return view.replaceChildren(...overview);
+    view.replaceChildren(render({
+      n: lot.dataset.lot,
+      status: lot.dataset.status,
+      side: lot.dataset.side,
+      lane: lot.hasAttribute('data-lane'),
+      showhome: lot.hasAttribute('data-showhome'),
+    }));
+  };
+
+  lots.forEach(lot => {
+    lot.addEventListener('click', () => show(current === lot ? null : lot));
+    lot.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(current === lot ? null : lot); }
+      else if (e.key === 'Escape' && current) show(null);
     });
   });
-  sync();
-})();
+});
+
+// register.html?lot=44 (from the lot plan): start the message off with the lot they picked
+const lotAsked = new URLSearchParams(location.search).get('lot');
+const registerMsg = document.getElementById('r-msg');
+if (registerMsg && /^\d{1,3}$/.test(lotAsked || '') && !registerMsg.value) registerMsg.value = `I'd like to know more about Lot ${lotAsked}.`;
+
+// cookie consent: the Meta Pixel (loadMetaPixel, defined in each page's <head>) only runs after "Accept"
+const CONSENT_KEY = 'dr-cookie-consent';
+const readConsent = () => { try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; } };
+const showCookieBanner = () => {
+  if (document.querySelector('.cookie-banner')) return;
+  const banner = document.createElement('div');
+  banner.className = 'cookie-banner';
+  banner.setAttribute('role', 'region');
+  banner.setAttribute('aria-label', 'Cookie consent');
+  banner.innerHTML =
+    '<p>We use cookies (Meta Pixel) to measure our advertising. Accept to allow them, or decline and nothing is tracked. ' +
+    '<a href="https://www.diamondridgeliving.ca/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy<span class="visually-hidden"> (opens in a new tab)</span></a></p>' +
+    '<div class="cookie-actions">' +
+    '<button type="button" class="btn btn-ghost btn-sm" data-consent="denied">Decline</button>' +
+    '<button type="button" class="btn btn-solid btn-sm" data-consent="granted">Accept</button>' +
+    '</div>';
+  banner.querySelectorAll('[data-consent]').forEach(btn => btn.addEventListener('click', () => {
+    const choice = btn.getAttribute('data-consent');
+    const was = readConsent();
+    try { localStorage.setItem(CONSENT_KEY, choice); } catch (e) {}
+    banner.remove();
+    if (choice === 'granted' && window.loadMetaPixel) window.loadMetaPixel();
+    // the pixel can't be unloaded from a running page, so reload to honour a withdrawal
+    if (choice === 'denied' && was === 'granted') location.reload();
+  }));
+  document.body.appendChild(banner);
+};
+if (!readConsent()) showCookieBanner();
+document.querySelectorAll('[data-cookie-settings]').forEach(btn => btn.addEventListener('click', showCookieBanner));

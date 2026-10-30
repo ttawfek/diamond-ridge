@@ -1,0 +1,24 @@
+{
+    // Static server for local preview on http://localhost:8080 (started by launch.json).
+    // Forms post to /api/send, a Vercel function; use `vercel dev` to test them locally.
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Serve site",
+            "type": "shell",
+            "command": "python",
+            "args": ["-u", "-m", "http.server", "8080", "--bind", "127.0.0.1"],
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "http-server",
+                "pattern": { "regexp": "^__never__$" },
+                "background": {
+                    // Active from launch; begin must never match, or VS Code skips the end check on that line.
+                    "activeBegin": true,
+                    "beginsPattern": "^__never__$",
+                    "endsPattern": "Serving HTTP on"
+                }
+            }
+        }
+    ]
+}
