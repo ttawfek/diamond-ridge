@@ -1563,8 +1563,10 @@ a.model:hover {
   h2 { font-size: fs("2xl"); max-width: 22ch; }
 }
 
-// Photo of Don behind the developer page's CTA. Phones: a dim texture under the stacked
-// copy. lg+: the photo sits on the right, clear of the copy, faded into the band.
+// Photo of Don behind the developer page's CTA, across the full width of the band.
+// Phones: an even dim under the stacked copy. lg+: darker on the left behind the
+// heading and text, lighter toward the right so the photo shows through. The band grows
+// with the screen width (copy centred) so the 2:1 photo isn't cropped to a thin strip.
 .cta-band--developer {
   background:
     linear-gradient(rgba(14, 13, 11, 0.86), rgba(14, 13, 11, 0.74)),
@@ -1572,9 +1574,12 @@ a.model:hover {
     var(--color-bg-alt);
 
   @include mq("lg") {
+    display: grid;
+    align-content: center;
+    min-height: clamp(26rem, 32vw, 50rem);
     background:
-      linear-gradient(90deg, var(--color-bg-alt) 0%, var(--color-bg-alt) 40%, rgba(21, 19, 15, 0.5) 62%, rgba(21, 19, 15, 0.45) 100%),
-      url("../assets/developer/don-corral-1600.webp") right 30% / auto 100% no-repeat,
+      linear-gradient(90deg, rgba(21, 19, 15, 0.9) 0%, rgba(21, 19, 15, 0.78) 45%, rgba(21, 19, 15, 0.45) 100%),
+      url("../assets/developer/don-corral-1600.webp") 50% 30% / cover no-repeat,
       var(--color-bg-alt);
   }
 }
