@@ -159,7 +159,7 @@ if (filterRow) {
     if (status && announce) status.textContent = 'Showing ' + shown + ' homes';
   };
   buttons.forEach(b => b.addEventListener('click', () => apply(b.dataset.filter, true)));
-  // a deep link (e.g. homes.html#tucker) must never point into a hidden section
+  // a deep link (e.g. homes.html#woodrow) must never point into a hidden section
   window.addEventListener('hashchange', () => {
     const target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (target && target.closest('[data-collection][hidden]')) { apply('all', false); target.scrollIntoView(); }
@@ -249,24 +249,27 @@ if (lbLinks.length) {
 
 // home lot plan: picking a lot swaps the panel from the overview to that lot; picking it again,
 // or Escape, goes back. data-status is "available", "pending" (sale pending), "sold" or the builder
-// holding the lot (albion | sen | valmont | woodmaster); the overview and each lot's label are rebuilt from those.
+// holding the lot (albion | sen | valmont | woodmaster); data-resale marks a built home being resold. The overview and
+// each lot's label are rebuilt from those.
 document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   const lots = [...plan.querySelectorAll('.lot')];
   const body = plan.querySelector('[data-lot-body]');
   const tpl = plan.querySelector('[data-lot-template]');
-  const BUILDERS = { albion: 'Albion Homes', sen: 'SEN', valmont: 'Valmont Custom Homes', woodmaster: 'Woodmaster' };
+  const BUILDERS = { albion: 'Albion Homes', sen: 'Sen Homes', valmont: 'Valmont Custom Homes', woodmaster: 'Woodmaster Homes' };
   const CLOSED = ['sold', 'pending']; // everything else is still open to buyers
   lots.forEach(l => {
     const s = l.dataset.status;
-    l.setAttribute('aria-label', `Lot ${l.dataset.lot}, ${BUILDERS[s] || (s === 'pending' ? 'sale pending' : s)}${l.hasAttribute('data-showhome') ? ', showhome' : ''}`);
+    l.setAttribute('aria-label', `Lot ${l.dataset.lot}, ${BUILDERS[s] || (s === 'pending' ? 'sale pending' : s)}${l.hasAttribute('data-resale') ? ', resale' : ''}${l.hasAttribute('data-showhome') ? ', show home' : ''}`);
   });
-  const numbers = status => lots.filter(l => l.dataset.status === status).map(l => +l.dataset.lot).sort((a, b) => a - b);
+  const numbers = (status, only = '') => lots.filter(l => l.dataset.status === status && (!only || l.hasAttribute(only))).map(l => +l.dataset.lot).sort((a, b) => a - b);
   const listOf = ns => (ns.length > 1 ? 'Lots ' + ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns.length ? 'Lot ' + ns[0] : 'None left');
+  const join = ns => (ns.length > 1 ? ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns[0]);
   plan.querySelector('[data-lot-count]').textContent = lots.filter(l => !CLOSED.includes(l.dataset.status)).length;
   plan.querySelector('[data-lot-total]').textContent = lots.length;
   plan.querySelectorAll('[data-lot-list]').forEach(dd => {
     const ns = numbers(dd.dataset.lotList);
-    if (ns.length) dd.textContent = listOf(ns);
+    const resale = numbers(dd.dataset.lotList, 'data-resale');
+    if (ns.length) dd.textContent = listOf(ns) + (resale.length ? ` (${join(resale)} ${resale.length > 1 ? 'are resales' : 'is a resale'})` : '');
     else dd.parentElement.remove(); // no lots in this group right now
   });
   const view = body.querySelector('[data-lot-view]');
@@ -274,7 +277,7 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   let current = null;
 
   // one lot's details, from the template
-  const render = ({ n, status, side, lane, showhome }) => {
+  const render = ({ n, status, side, lane, showhome, resale }) => {
     const frag = tpl.content.cloneNode(true);
     const f = name => frag.querySelector(`[data-f="${name}"]`);
     const open = !CLOSED.includes(status);
@@ -286,6 +289,7 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
     f('side').textContent = `${side === 'north' ? 'North' : 'South'} side`;
     if (!lane) f('lane-row').remove();
     if (!showhome) f('show-row').remove();
+    if (!resale) f('resale').remove();
     // only open lots get a button; it carries the lot to the register form
     if (open) f('cta').href = `register.html?lot=${n}`;
     else f('cta').remove();
@@ -299,7 +303,7 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   sizer.setAttribute('aria-hidden', 'true');
   sizer.inert = true;
   const longest = Object.keys(BUILDERS).reduce((a, b) => (BUILDERS[b].length > BUILDERS[a].length ? b : a));
-  sizer.append(render({ n: '48', status: longest, side: 'north', lane: true, showhome: true }));
+  sizer.append(render({ n: '48', status: longest, side: 'north', lane: true, showhome: true, resale: true }));
   body.append(sizer);
 
   const show = lot => {
@@ -312,6 +316,7 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
       side: lot.dataset.side,
       lane: lot.hasAttribute('data-lane'),
       showhome: lot.hasAttribute('data-showhome'),
+      resale: lot.hasAttribute('data-resale'),
     }));
   };
 
@@ -324,10 +329,25 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   });
 });
 
-// register.html?lot=44 (from the lot plan): start the message off with the lot they picked
-const lotAsked = new URLSearchParams(location.search).get('lot');
+// register.html?lot=44 (from the lot plan) or ?home=The+Max (a model page's "Enquire" button):
+// start the message off with what they picked; a home also sets "I'm interested in" to a new home.
+// ?interest=Receiving+the+information+package picks any "I'm interested in" option by its text.
+const asked = new URLSearchParams(location.search);
+const lotAsked = asked.get('lot');
+const homeAsked = asked.get('home');
+const interestAsked = asked.get('interest');
 const registerMsg = document.getElementById('r-msg');
+const registerInterest = document.getElementById('r-interest');
+const pickInterest = test => {
+  const opt = registerInterest && [...registerInterest.options].find(test);
+  if (opt) registerInterest.value = opt.value;
+};
 if (registerMsg && /^\d{1,3}$/.test(lotAsked || '') && !registerMsg.value) registerMsg.value = `I'd like to know more about Lot ${lotAsked}.`;
+if (registerMsg && /^[\w .'-]{1,40}$/.test(homeAsked || '')) {
+  if (!registerMsg.value) registerMsg.value = `I'd like to know more about ${homeAsked}.`;
+  pickInterest(o => o.text.startsWith('A brand new home'));
+}
+if (interestAsked) pickInterest(o => o.text.toLowerCase() === interestAsked.trim().toLowerCase());
 
 // cookie consent: the Meta Pixel (loadMetaPixel, defined in each page's <head>) only runs after "Accept"
 const CONSENT_KEY = 'dr-cookie-consent';
@@ -340,7 +360,7 @@ const showCookieBanner = () => {
   banner.setAttribute('aria-label', 'Cookie consent');
   banner.innerHTML =
     '<p>We use cookies (Meta Pixel) to measure our advertising. Accept to allow them, or decline and nothing is tracked. ' +
-    '<a href="https://www.diamondridgeliving.ca/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy<span class="visually-hidden"> (opens in a new tab)</span></a></p>' +
+    '<a href="/privacy.html">Privacy Policy</a></p>' +
     '<div class="cookie-actions">' +
     '<button type="button" class="btn btn-ghost btn-sm" data-consent="denied">Decline</button>' +
     '<button type="button" class="btn btn-solid btn-sm" data-consent="granted">Accept</button>' +

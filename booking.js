@@ -289,6 +289,20 @@
   renderCal();
   updateSummary();
 
-  // deep link from other pages: index.html#book opens the booking dialog
+  // deep link from other pages: index.html#book opens the booking dialog, and
+  // index.html?home=The+Max#book (a model page's button) also picks that home under
+  // "What would you like to see?" ("The Max" matches the option "Valmont: Max");
+  // ?see= does the same for any other option, e.g. ?see=A+general+tour+of+Diamond+Ridge
+  var params = new URLSearchParams(location.search);
+  var homeAsked = params.get('home') || params.get('see');
+  if (homeAsked) {
+    var want = homeAsked.trim().replace(/^The /i, '').toLowerCase();
+    var pick = document.getElementById('bkInterest');
+    Array.prototype.some.call(pick.options, function (o) {
+      var name = o.text.replace(/^[^:]*:\s*/, '').replace(/^The /i, '').toLowerCase();
+      if (name === want) { pick.value = o.value; return true; }
+      return false;
+    });
+  }
   if (location.hash === '#book') open();
 })();
