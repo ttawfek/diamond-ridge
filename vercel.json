@@ -2,7 +2,20 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
     { "source": "/contact.html", "destination": "/register.html", "permanent": true },
-    { "source": "/contact", "destination": "/register.html", "permanent": true }
+    { "source": "/contact", "destination": "/register.html", "permanent": true },
+    { "source": "/privacy-policy", "destination": "/privacy.html", "permanent": true },
+    { "source": "/homes/the-burrito.html", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-burrito", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-madonna.html", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-madonna", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-tucker.html", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-tucker", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-boone.html", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-boone", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-winchester.html", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-winchester", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-snowball.html", "destination": "/homes.html", "permanent": true },
+    { "source": "/homes/the-snowball", "destination": "/homes.html", "permanent": true }
   ],
   "headers": [
     {

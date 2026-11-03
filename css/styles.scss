@@ -34,6 +34,8 @@ $color-plan-paper:    #f6f3ec;
 $color-lot-albion:    #a6bb8f;   // lot plan: sage, 8.9:1 under $color-on-accent
 $color-lot-sen:       #8ea6c6;   // lot plan: dusty blue, 7.4:1 under $color-on-accent
 $color-lot-valmont:   #ecd683;   // lot plan: light yellow, 12.8:1 under $color-on-accent
+$color-lot-woodmaster: #c4aedb; // lot plan: lilac, 9.2:1 under $color-on-accent
+$color-lot-pending:   #e9a77c;   // lot plan: terracotta, 9.1:1 under $color-on-accent
 $color-lot-open:      #f7f6f2;   // lot plan: available (white), 17.1:1 under $color-on-accent
 $color-line:          rgba(242, 236, 223, 0.12);
 $color-line-strong:   rgba(242, 236, 223, 0.24);
@@ -127,6 +129,8 @@ $breakpoints: (
   --color-lot-albion: #{$color-lot-albion};
   --color-lot-sen: #{$color-lot-sen};
   --color-lot-valmont: #{$color-lot-valmont};
+  --color-lot-woodmaster: #{$color-lot-woodmaster};
+  --color-lot-pending: #{$color-lot-pending};
   --color-lot-open: #{$color-lot-open};
   --color-line: #{$color-line};
   --color-line-strong: #{$color-line-strong};
@@ -833,6 +837,22 @@ em { font-style: italic; }
 
 .lede--italic { font-family: var(--font-display); font-style: italic; }
 
+// long-form legal text (privacy.html)
+.legal {
+  max-width: 44rem;
+  margin-top: space("7");
+
+  h2 { margin-top: space("7"); font-size: fs("xl"); }
+  h2:first-child { margin-top: 0; }
+  p { margin-top: space("3"); color: var(--color-text-muted); }
+  ul { margin-top: space("3"); padding-left: space("5"); color: var(--color-text-muted); }
+  li + li { margin-top: space("2"); }
+  li::marker { color: var(--color-accent); }
+  strong { color: var(--color-text); font-weight: 600; }
+  a { color: var(--color-accent); }
+  a:hover { color: var(--color-accent-strong); }
+}
+
 .fineprint {
   margin-top: space("4");
   color: var(--color-text-subtle);
@@ -1008,6 +1028,35 @@ em { font-style: italic; }
   @include mq("md") { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+// four builders: 2 x 2 on tablet, 4 across on desktop, staggered (2nd and 4th sit lower).
+// `top`, not transform, so it never fights the reveal animations; the padding keeps the
+// shifted cards clear of whatever follows the grid.
+.card-grid-4 {
+  display: grid;
+  gap: clamp(1rem, 0.6rem + 1.5vw, 1.75rem);
+
+  @include mq("md") { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @include mq("xl") {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    padding-bottom: space("8");
+
+    > :nth-child(even) { position: relative; top: space("8"); }
+  }
+
+  .card h3 { font-size: fs("lg"); }
+}
+
+// a builder section with no models yet (Woodmaster)
+.builder-soon {
+  max-width: 44rem;
+  padding: clamp(1.5rem, 1.1rem + 1.6vw, 2.5rem);
+  background: var(--color-card);
+  border: 1px solid var(--color-card-edge);
+  border-radius: var(--radius-lg);
+
+  .lede { margin-bottom: space("5"); }
+}
+
 // Pricing
 .price-cols {
   display: grid;
@@ -1060,6 +1109,18 @@ em { font-style: italic; }
     font-family: var(--font-body);
     font-size: fs("sm");
   }
+}
+
+// in place of a price on the land card: no lot pricing on the site
+.price-link {
+  margin-top: space("6");
+  padding-top: space("5");
+  border-top: 1px solid var(--color-line);
+  font-family: var(--font-display);
+  font-size: fs("lg");
+
+  a { color: var(--color-accent-strong); text-underline-offset: 0.2em; }
+  a:hover { color: var(--color-accent); }
 }
 
 // Callout (FTHB rebate, notes)
@@ -1332,6 +1393,14 @@ em { font-style: italic; }
     }
   }
 
+  // floor plan link on the Albion and Sen cards (opens in the lightbox)
+  .m-plan {
+    margin-top: space("3");
+    font-size: fs("sm");
+
+    a { color: var(--color-accent-strong); text-underline-offset: 0.2em; }
+  }
+
   .m-badge {
     display: inline-block;
     margin-left: space("2");
@@ -1494,8 +1563,10 @@ a.model:hover {
   h2 { font-size: fs("2xl"); max-width: 22ch; }
 }
 
-// Photo of Don behind the developer page's CTA. Phones: a dim texture under the stacked
-// copy. lg+: the photo sits on the right, clear of the copy, faded into the band.
+// Photo of Don behind the developer page's CTA, across the full width of the band.
+// Phones: an even dim under the stacked copy. lg+: darker on the left behind the
+// heading and text, lighter toward the right so the photo shows through. The band grows
+// with the screen width (copy centred) so the 2:1 photo isn't cropped to a thin strip.
 .cta-band--developer {
   background:
     linear-gradient(rgba(14, 13, 11, 0.86), rgba(14, 13, 11, 0.74)),
@@ -1503,9 +1574,12 @@ a.model:hover {
     var(--color-bg-alt);
 
   @include mq("lg") {
+    display: grid;
+    align-content: center;
+    min-height: clamp(26rem, 32vw, 50rem);
     background:
-      linear-gradient(90deg, var(--color-bg-alt) 0%, var(--color-bg-alt) 40%, rgba(21, 19, 15, 0.5) 62%, rgba(21, 19, 15, 0.45) 100%),
-      url("../assets/developer/don-corral-1600.webp") right 30% / auto 100% no-repeat,
+      linear-gradient(90deg, rgba(21, 19, 15, 0.9) 0%, rgba(21, 19, 15, 0.78) 45%, rgba(21, 19, 15, 0.45) 100%),
+      url("../assets/developer/don-corral-1600.webp") 50% 30% / cover no-repeat,
       var(--color-bg-alt);
   }
 }
@@ -1600,6 +1674,8 @@ a.model:hover {
   &[data-status="albion"] polygon { fill: var(--color-lot-albion); }
   &[data-status="sen"] polygon { fill: var(--color-lot-sen); }
   &[data-status="valmont"] polygon { fill: var(--color-lot-valmont); }
+  &[data-status="woodmaster"] polygon { fill: var(--color-lot-woodmaster); }
+  &[data-status="pending"] polygon { fill: var(--color-lot-pending); }
   &[data-status="available"] polygon { fill: var(--color-lot-open); }
   &:not([data-status="sold"]) text { fill: var(--color-on-accent); }
 
@@ -1608,6 +1684,8 @@ a.model:hover {
   &[data-status="albion"]:hover polygon { fill: var(--color-lot-albion); }
   &[data-status="sen"]:hover polygon { fill: var(--color-lot-sen); }
   &[data-status="valmont"]:hover polygon { fill: var(--color-lot-valmont); }
+  &[data-status="woodmaster"]:hover polygon { fill: var(--color-lot-woodmaster); }
+  &[data-status="pending"]:hover polygon { fill: var(--color-lot-pending); }
   &[data-status="available"]:hover polygon { fill: var(--color-lot-open); }
 
   // gold, not white: a white outline would vanish around the white "available" lots
@@ -1687,10 +1765,22 @@ a.model:hover {
   gap: space("2");
   font-weight: 600;
 
+  .lot-tag {
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-size: fs("xs");
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
   i { width: 0.75rem; height: 0.75rem; border-radius: 50%; background: var(--color-surface-3); }
   &[data-status="albion"] i { background: var(--color-lot-albion); }
   &[data-status="sen"] i { background: var(--color-lot-sen); }
   &[data-status="valmont"] i { background: var(--color-lot-valmont); }
+  &[data-status="woodmaster"] i { background: var(--color-lot-woodmaster); }
+  &[data-status="pending"] i { background: var(--color-lot-pending); }
   &[data-status="available"] i { background: var(--color-lot-open); }
 }
 
@@ -1763,6 +1853,8 @@ a.model:hover {
   [data-status="albion"]::before { background: var(--color-lot-albion); }
   [data-status="sen"]::before { background: var(--color-lot-sen); }
   [data-status="valmont"]::before { background: var(--color-lot-valmont); }
+  [data-status="woodmaster"]::before { background: var(--color-lot-woodmaster); }
+  [data-status="pending"]::before { background: var(--color-lot-pending); }
   [data-status="available"]::before { background: var(--color-lot-open); }
   [data-status="showhome"]::before {
     background: var(--color-text);

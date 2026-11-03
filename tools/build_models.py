@@ -3,7 +3,7 @@
 Usage (from the repo root):  python -I tools/build_models.py
 
 Writes / updates:
-  homes/the-<slug>.html             one page per model (12)
+  homes/the-<slug>.html             one page per model (6)
   homes.html                        ItemList JSON-LD + the card sections between BEGIN:models / END:models
   index.html                        featured cards (BEGIN:featured) + booking options (BEGIN:booking-models)
 
@@ -16,6 +16,7 @@ import json
 import os
 import re
 import sys
+from urllib.parse import quote_plus
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = json.load(open(os.path.join(ROOT, 'tools', 'models.json'), encoding='utf-8'))
@@ -24,7 +25,7 @@ MODELS = DATA['models']
 COLL = DATA['collections']
 IMG = DATA['images']
 BY_SLUG = {m['slug']: m for m in MODELS}
-FEATURED = ['tucker', 'woodrow', 'boone', 'fatboy']  # owner's picks for the index teaser
+FEATURED = ['woodrow', 'max', 'taco', 'duke', 'fatboy', 'metallica']  # index teaser, 3 x 2, in this order
 
 
 def read(rel):
@@ -149,10 +150,9 @@ def quickstats(m):
 
 
 def related(m):
-    """Three nearest-priced homes from the same collection, then the nearest from the other one."""
-    same = sorted((x for x in MODELS if x['collection'] == m['collection'] and x is not m), key=lambda x: (abs(x['price'] - m['price']), x['price']))[:3]
+    """The other homes in the same collection, then the nearest-priced one from the other collection."""
+    same = [x for x in MODELS if x['collection'] == m['collection'] and x is not m]
     other = sorted((x for x in MODELS if x['collection'] != m['collection']), key=lambda x: (abs(x['price'] - m['price']), x['price']))[:1]
-    same.sort(key=lambda x: x['price'])
     return same + other
 
 
@@ -269,8 +269,9 @@ def model_page(m):
     L.append('          <span class="m-tag">%s</span>' % m['tagline'])
     L.append('        </div>')
     L.append('        <div class="btn-row">')
-    L.append('          <a href="../register.html" class="btn btn-solid">Enquire about %s</a>' % n)
-    L.append('          <a href="../index.html#book" class="btn btn-ghost">Book a showing</a>')
+    # ?home= preselects this model on the register form and in the booking dialog (js.js, booking.js)
+    L.append('          <a href="../register.html?home=%s" class="btn btn-solid">Enquire about %s</a>' % (quote_plus(n), n))
+    L.append('          <a href="../index.html?home=%s#book" class="btn btn-ghost">Book a showing</a>' % quote_plus(n))
     L.append('        </div>')
     L.append('      </div>')
     L.append('')
@@ -331,11 +332,11 @@ def model_page(m):
     L.append('        <p class="eyebrow">The Valmont Custom Home Collection</p>')
     L.append('        <h2 id="more-title">More homes in the collection</h2>')
     L.append('      </div>')
-    L.append('      <div class="model-grid model-grid--4 reveal">')
+    L.append('      <div class="model-grid model-grid--3 reveal">')
     L.append('\n'.join(card(x, '../') for x in related(m)))
     L.append('      </div>')
     L.append('      <div class="btn-row mt-6 reveal">')
-    L.append('        <a href="../homes.html" class="btn btn-ghost">View all twelve homes</a>')
+    L.append('        <a href="../homes.html" class="btn btn-ghost">View the collection</a>')
     L.append('      </div>')
     L.append('    </div>')
     L.append('  </section>')
@@ -417,11 +418,9 @@ def main():
 
     index = read('index.html')
     index = replace_region(index, 'featured', '\n'.join(card(BY_SLUG[s]) for s in FEATURED), 'index.html')
-    opts = []
-    for key, label in (('bungalow', 'Valmont bungalows'), ('two-storey', 'Valmont two-storey homes')):
-        opts.append('          <optgroup label="%s">' % label)
-        opts += ['            <option>%s</option>' % m['name'] for m in MODELS if m['collection'] == key]
-        opts.append('          </optgroup>')
+    opts = ['          <optgroup label="Valmont Custom Homes">']
+    opts += ['            <option>Valmont: %s</option>' % BY_SLUG[s]['name'].replace('The ', '') for s in FEATURED]
+    opts.append('          </optgroup>')
     index = replace_region(index, 'booking-models', '\n'.join(opts), 'index.html')
     write('index.html', index)
     print('build_models: wrote %d model pages, homes.html and index.html' % len(MODELS))
