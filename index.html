@@ -104,6 +104,12 @@ fbq('track', 'PageView');
 try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMetaPixel(); } catch (e) {}
 </script>
 <!-- End Meta Pixel Code -->
+<!-- Vercel Web Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- End Vercel Web Analytics -->
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
