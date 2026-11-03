@@ -248,20 +248,21 @@ if (lbLinks.length) {
 }
 
 // home lot plan: picking a lot swaps the panel from the overview to that lot; picking it again,
-// or Escape, goes back. data-status is "available", "sold" or the builder holding the lot
-// (albion | sen | valmont); the overview and each lot's label are rebuilt from those.
+// or Escape, goes back. data-status is "available", "pending" (sale pending), "sold" or the builder
+// holding the lot (albion | sen | valmont | woodmaster); the overview and each lot's label are rebuilt from those.
 document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   const lots = [...plan.querySelectorAll('.lot')];
   const body = plan.querySelector('[data-lot-body]');
   const tpl = plan.querySelector('[data-lot-template]');
-  const BUILDERS = { albion: 'Albion Homes', sen: 'SEN', valmont: 'Valmont Custom Homes' };
+  const BUILDERS = { albion: 'Albion Homes', sen: 'SEN', valmont: 'Valmont Custom Homes', woodmaster: 'Woodmaster' };
+  const CLOSED = ['sold', 'pending']; // everything else is still open to buyers
   lots.forEach(l => {
     const s = l.dataset.status;
-    l.setAttribute('aria-label', `Lot ${l.dataset.lot}, ${BUILDERS[s] || s}${l.hasAttribute('data-showhome') ? ', showhome' : ''}`);
+    l.setAttribute('aria-label', `Lot ${l.dataset.lot}, ${BUILDERS[s] || (s === 'pending' ? 'sale pending' : s)}${l.hasAttribute('data-showhome') ? ', showhome' : ''}`);
   });
   const numbers = status => lots.filter(l => l.dataset.status === status).map(l => +l.dataset.lot).sort((a, b) => a - b);
   const listOf = ns => (ns.length > 1 ? 'Lots ' + ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns.length ? 'Lot ' + ns[0] : 'None left');
-  plan.querySelector('[data-lot-count]').textContent = lots.filter(l => l.dataset.status !== 'sold').length;
+  plan.querySelector('[data-lot-count]').textContent = lots.filter(l => !CLOSED.includes(l.dataset.status)).length;
   plan.querySelector('[data-lot-total]').textContent = lots.length;
   plan.querySelectorAll('[data-lot-list]').forEach(dd => {
     const ns = numbers(dd.dataset.lotList);
@@ -276,10 +277,10 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   const render = ({ n, status, side, lane, showhome }) => {
     const frag = tpl.content.cloneNode(true);
     const f = name => frag.querySelector(`[data-f="${name}"]`);
-    const open = status !== 'sold';
+    const open = !CLOSED.includes(status);
     f('num').textContent = n;
     f('status').dataset.status = status;
-    f('status').querySelector('span').textContent = open ? 'Available' : 'Sold';
+    f('status').querySelector('span').textContent = open ? 'Available' : status === 'pending' ? 'Sale pending' : 'Sold';
     if (BUILDERS[status]) f('builder').textContent = BUILDERS[status];
     else f('builder-row').remove();
     f('side').textContent = `${side === 'north' ? 'North' : 'South'} side`;

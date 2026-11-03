@@ -34,6 +34,8 @@ $color-plan-paper:    #f6f3ec;
 $color-lot-albion:    #a6bb8f;   // lot plan: sage, 8.9:1 under $color-on-accent
 $color-lot-sen:       #8ea6c6;   // lot plan: dusty blue, 7.4:1 under $color-on-accent
 $color-lot-valmont:   #ecd683;   // lot plan: light yellow, 12.8:1 under $color-on-accent
+$color-lot-woodmaster: #c4aedb; // lot plan: lilac, 9.2:1 under $color-on-accent
+$color-lot-pending:   #e9a77c;   // lot plan: terracotta, 9.1:1 under $color-on-accent
 $color-lot-open:      #f7f6f2;   // lot plan: available (white), 17.1:1 under $color-on-accent
 $color-line:          rgba(242, 236, 223, 0.12);
 $color-line-strong:   rgba(242, 236, 223, 0.24);
@@ -127,6 +129,8 @@ $breakpoints: (
   --color-lot-albion: #{$color-lot-albion};
   --color-lot-sen: #{$color-lot-sen};
   --color-lot-valmont: #{$color-lot-valmont};
+  --color-lot-woodmaster: #{$color-lot-woodmaster};
+  --color-lot-pending: #{$color-lot-pending};
   --color-lot-open: #{$color-lot-open};
   --color-line: #{$color-line};
   --color-line-strong: #{$color-line-strong};
@@ -1600,6 +1604,8 @@ a.model:hover {
   &[data-status="albion"] polygon { fill: var(--color-lot-albion); }
   &[data-status="sen"] polygon { fill: var(--color-lot-sen); }
   &[data-status="valmont"] polygon { fill: var(--color-lot-valmont); }
+  &[data-status="woodmaster"] polygon { fill: var(--color-lot-woodmaster); }
+  &[data-status="pending"] polygon { fill: var(--color-lot-pending); }
   &[data-status="available"] polygon { fill: var(--color-lot-open); }
   &:not([data-status="sold"]) text { fill: var(--color-on-accent); }
 
@@ -1608,6 +1614,8 @@ a.model:hover {
   &[data-status="albion"]:hover polygon { fill: var(--color-lot-albion); }
   &[data-status="sen"]:hover polygon { fill: var(--color-lot-sen); }
   &[data-status="valmont"]:hover polygon { fill: var(--color-lot-valmont); }
+  &[data-status="woodmaster"]:hover polygon { fill: var(--color-lot-woodmaster); }
+  &[data-status="pending"]:hover polygon { fill: var(--color-lot-pending); }
   &[data-status="available"]:hover polygon { fill: var(--color-lot-open); }
 
   // gold, not white: a white outline would vanish around the white "available" lots
@@ -1691,6 +1699,8 @@ a.model:hover {
   &[data-status="albion"] i { background: var(--color-lot-albion); }
   &[data-status="sen"] i { background: var(--color-lot-sen); }
   &[data-status="valmont"] i { background: var(--color-lot-valmont); }
+  &[data-status="woodmaster"] i { background: var(--color-lot-woodmaster); }
+  &[data-status="pending"] i { background: var(--color-lot-pending); }
   &[data-status="available"] i { background: var(--color-lot-open); }
 }
 
@@ -1763,6 +1773,8 @@ a.model:hover {
   [data-status="albion"]::before { background: var(--color-lot-albion); }
   [data-status="sen"]::before { background: var(--color-lot-sen); }
   [data-status="valmont"]::before { background: var(--color-lot-valmont); }
+  [data-status="woodmaster"]::before { background: var(--color-lot-woodmaster); }
+  [data-status="pending"]::before { background: var(--color-lot-pending); }
   [data-status="available"]::before { background: var(--color-lot-open); }
   [data-status="showhome"]::before {
     background: var(--color-text);
