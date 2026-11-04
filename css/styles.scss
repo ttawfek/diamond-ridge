@@ -1688,10 +1688,15 @@ a.model:hover {
   &[data-status="pending"]:hover polygon { fill: var(--color-lot-pending); }
   &[data-status="available"]:hover polygon { fill: var(--color-lot-open); }
 
+  // a builder's lot whose sale is pending: js.js lays a striped copy of the shape over the builder's colour
+  &[data-pending] polygon.lot-hatch { fill: url(#lot-pending-hatch); stroke: none; pointer-events: none; }
+
   // gold, not white: a white outline would vanish around the white "available" lots
   &:focus-visible polygon,
   &[aria-pressed="true"] polygon { stroke: var(--color-accent); stroke-width: 6; }
 }
+
+.lot-hatch-stripe { fill: var(--color-lot-pending); }
 
 .lot-star {
   fill: var(--color-text);

@@ -31,8 +31,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&amp;family=Inter:wght@400;500;600&amp;display=swap"></noscript>
-<link rel="stylesheet" href="css/styles.css?v=20261103g">
-<script src="js.js?v=20261103c" defer></script>
+<link rel="stylesheet" href="css/styles.css?v=20261104a">
+<script src="js.js?v=20261104a" defer></script>
 <script src="booking.js?v=20261103b" defer></script>
 <script src="motion.js?v=20261028c" defer></script>
 <script type="application/ld+json">
@@ -380,7 +380,7 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
   <section class="section section--alt" id="lots">
     <div class="wrap">
       <!-- Current lots (Phase 1 lot table, Nov 2026). Each lot's status lives in data-status (available | pending | sold | albion | sen | valmont | woodmaster)
-           on its <g class="lot">; data-showhome draws a star, data-resale tags a resale. Changing a lot is that one edit: js.js recounts the
+           on its <g class="lot">; data-showhome draws a star, data-resale tags a resale, data-pending marks a builder's lot as sale pending (striped). Changing a lot is that one edit: js.js recounts the
            overview from these, but update the overview text below too, it's what visitors without JS see. -->
       <div class="lot-plan" data-lot-plan>
         <div class="lot-plan-intro reveal">
@@ -394,6 +394,12 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
         <div class="lot-plan-stage reveal">
           <div class="lot-plan-map">
             <svg class="lot-plan-svg" viewBox="80 -90 1160 1000" preserveAspectRatio="xMidYMid slice" role="group" aria-label="Phase 1 lot plan, Flare Avenue SW">
+              <defs>
+                <!-- stripes laid over a builder's lot whose sale is pending (data-pending); js.js adds the overlay -->
+                <pattern id="lot-pending-hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <rect class="lot-hatch-stripe" width="6" height="14"/>
+                </pattern>
+              </defs>
               <g class="lot-plan-roads" aria-hidden="true">
                 <path class="road road--ave" d="M60 456 L120 456 C 450 455, 800 430, 1200 318 L1260 301"/>
                 <path class="road road--lane" d="M380 236 C 560 230, 800 205, 1022 146"/>
@@ -481,7 +487,7 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
                   <polygon points="718,476 773,467 797,620 740,631"/>
                   <text x="757" y="549">27</text>
                 </g>
-                <g class="lot" data-lot="28" data-status="valmont" data-side="south" data-lane tabindex="0" role="button" aria-pressed="false" aria-label="Lot 28, Valmont Custom Homes">
+                <g class="lot" data-lot="28" data-status="valmont" data-side="south" data-pending data-lane tabindex="0" role="button" aria-pressed="false" aria-label="Lot 28, Valmont Custom Homes, sale pending">
                   <polygon points="778,465 832,456 860,606 803,617"/>
                   <text x="818" y="537">28</text>
                 </g>
@@ -530,7 +536,7 @@ try { if (localStorage.getItem('dr-cookie-consent') === 'granted') window.loadMe
                 <p class="lot-panel-sub">lots still available</p>
               </div>
               <dl class="lot-specs">
-                <div><dt>Valmont</dt><dd data-lot-list="valmont">Lots 19 and 20</dd></div>
+                <div><dt>Valmont</dt><dd data-lot-list="valmont">Lots 19, 20 and 28 (28 is sale pending)</dd></div>
                 <div><dt>Woodmaster</dt><dd data-lot-list="woodmaster">Lots 43, 44 and 46</dd></div>
                 <div><dt>Albion</dt><dd data-lot-list="albion">Lots 25, 26 and 27 (27 is a resale)</dd></div>
                 <div><dt>Sen</dt><dd data-lot-list="sen">Lots 29, 30, 39, 40, 41 and 42</dd></div>

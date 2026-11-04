@@ -249,7 +249,8 @@ if (lbLinks.length) {
 
 // home lot plan: picking a lot swaps the panel from the overview to that lot; picking it again,
 // or Escape, goes back. data-status is "available", "pending" (sale pending), "sold" or the builder
-// holding the lot (albion | sen | valmont | woodmaster); data-resale marks a built home being resold. The overview and
+// holding the lot (albion | sen | valmont | woodmaster); data-resale marks a built home being resold, and data-pending
+// marks a builder's lot as sale pending (it keeps the builder's colour, striped, and is no longer open). The overview and
 // each lot's label are rebuilt from those.
 document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   const lots = [...plan.querySelectorAll('.lot')];
@@ -257,19 +258,31 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   const tpl = plan.querySelector('[data-lot-template]');
   const BUILDERS = { albion: 'Albion Homes', sen: 'Sen Homes', valmont: 'Valmont Custom Homes', woodmaster: 'Woodmaster Homes' };
   const CLOSED = ['sold', 'pending']; // everything else is still open to buyers
+  const isOpen = l => !CLOSED.includes(l.dataset.status) && !l.hasAttribute('data-pending');
   lots.forEach(l => {
     const s = l.dataset.status;
-    l.setAttribute('aria-label', `Lot ${l.dataset.lot}, ${BUILDERS[s] || (s === 'pending' ? 'sale pending' : s)}${l.hasAttribute('data-resale') ? ', resale' : ''}${l.hasAttribute('data-showhome') ? ', show home' : ''}`);
+    const pending = l.hasAttribute('data-pending') && s !== 'pending';
+    l.setAttribute('aria-label', `Lot ${l.dataset.lot}, ${BUILDERS[s] || (s === 'pending' ? 'sale pending' : s)}${pending ? ', sale pending' : ''}${l.hasAttribute('data-resale') ? ', resale' : ''}${l.hasAttribute('data-showhome') ? ', show home' : ''}`);
+    if (pending) { // stripes over the builder's colour, under the number
+      const hatch = l.querySelector('polygon').cloneNode();
+      hatch.classList.add('lot-hatch');
+      l.querySelector('polygon').after(hatch);
+    }
   });
   const numbers = (status, only = '') => lots.filter(l => l.dataset.status === status && (!only || l.hasAttribute(only))).map(l => +l.dataset.lot).sort((a, b) => a - b);
   const listOf = ns => (ns.length > 1 ? 'Lots ' + ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns.length ? 'Lot ' + ns[0] : 'None left');
   const join = ns => (ns.length > 1 ? ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1] : ns[0]);
-  plan.querySelector('[data-lot-count]').textContent = lots.filter(l => !CLOSED.includes(l.dataset.status)).length;
+  plan.querySelector('[data-lot-count]').textContent = lots.filter(isOpen).length;
   plan.querySelector('[data-lot-total]').textContent = lots.length;
   plan.querySelectorAll('[data-lot-list]').forEach(dd => {
     const ns = numbers(dd.dataset.lotList);
     const resale = numbers(dd.dataset.lotList, 'data-resale');
-    if (ns.length) dd.textContent = listOf(ns) + (resale.length ? ` (${join(resale)} ${resale.length > 1 ? 'are resales' : 'is a resale'})` : '');
+    const pending = numbers(dd.dataset.lotList, 'data-pending');
+    const notes = [
+      resale.length && `${join(resale)} ${resale.length > 1 ? 'are resales' : 'is a resale'}`,
+      pending.length && `${join(pending)} ${pending.length > 1 ? 'are' : 'is'} sale pending`,
+    ].filter(Boolean);
+    if (ns.length) dd.textContent = listOf(ns) + (notes.length ? ` (${notes.join('; ')})` : '');
     else dd.parentElement.remove(); // no lots in this group right now
   });
   const view = body.querySelector('[data-lot-view]');
@@ -277,13 +290,13 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
   let current = null;
 
   // one lot's details, from the template
-  const render = ({ n, status, side, lane, showhome, resale }) => {
+  const render = ({ n, status, side, lane, showhome, resale, pending }) => {
     const frag = tpl.content.cloneNode(true);
     const f = name => frag.querySelector(`[data-f="${name}"]`);
-    const open = !CLOSED.includes(status);
+    const open = !CLOSED.includes(status) && !pending;
     f('num').textContent = n;
     f('status').dataset.status = status;
-    f('status').querySelector('span').textContent = open ? 'Available' : status === 'pending' ? 'Sale pending' : 'Sold';
+    f('status').querySelector('span').textContent = open ? 'Available' : status === 'pending' || pending ? 'Sale pending' : 'Sold';
     if (BUILDERS[status]) f('builder').textContent = BUILDERS[status];
     else f('builder-row').remove();
     f('side').textContent = `${side === 'north' ? 'North' : 'South'} side`;
@@ -317,6 +330,7 @@ document.querySelectorAll('[data-lot-plan]').forEach(plan => {
       lane: lot.hasAttribute('data-lane'),
       showhome: lot.hasAttribute('data-showhome'),
       resale: lot.hasAttribute('data-resale'),
+      pending: lot.hasAttribute('data-pending'),
     }));
   };
 
