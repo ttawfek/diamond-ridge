@@ -6,7 +6,7 @@
 //   LEADS_TO        where leads go (comma-separated). Default info@diamondridgeliving.ca
 //   SHOWINGS_TO     showing requests only, if they belong in a different inbox. Default LEADS_TO
 //   MAIL_FROM       sender; its domain must be verified in Resend.
-//                   Default "Diamond Ridge <website@diamondridgeliving.ca>"
+//                   Default "Diamond Ridge <info@diamondridgeliving.ca>"
 //
 // Browsers with JS post JSON and get JSON back. Without JS, the register form posts
 // here directly and is redirected back to the page's #form-sent / #form-error.
@@ -18,7 +18,7 @@ const SITE = {
 };
 const LEADS_TO = process.env.LEADS_TO || 'info@diamondridgeliving.ca';
 const SHOWINGS_TO = process.env.SHOWINGS_TO || LEADS_TO;
-const MAIL_FROM = process.env.MAIL_FROM || 'Diamond Ridge <website@diamondridgeliving.ca>';
+const MAIL_FROM = process.env.MAIL_FROM || 'Diamond Ridge <info@diamondridgeliving.ca>';
 
 const SLOTS = ['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM'];
 const TIMELINES = ['1–3 Months', '3–6 Months', '6–9 Months', '9–12 Months', '12–24 Months'];
